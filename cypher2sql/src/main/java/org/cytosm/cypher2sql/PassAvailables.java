@@ -149,9 +149,21 @@ public class PassAvailables {
      * @param originalCypher cypher string to convert to sql
      * @return SQL statement or empty if it doesnt parse.
      */
-    public static String cypher2sql(final GTopInterfaceImpl gtopInterface, final String originalCypher)
-            throws Cypher2SqlException
-    {
+    public static String cypher2sql(final GTopInterfaceImpl gtopInterface, final String originalCypher) throws Cypher2SqlException {
+        // Last pass: Render the tree into SQL!
+        final ScopeSelect query = cypher2sqlTree(gtopInterface, originalCypher);
+        return query.toSQLString();
+    }
+
+    /**
+     * Root method for calling the cypher to sql parser. It takes a GTOP implementation and cypher string and returns a
+     * SQL tree.
+     *
+     * @param gtopInterface gtop implementaton
+     * @param originalCypher cypher string to convert to sql
+     * @return Returns a SQL tree.
+     */
+    public static ScopeSelect cypher2sqlTree(final GTopInterfaceImpl gtopInterface, final String originalCypher) throws Cypher2SqlException {
         List<String> cyphers = ExpandCypher.expandCypher(gtopInterface, originalCypher);
 
         List<ScopeSelect> allQ = cyphers.stream()
@@ -164,8 +176,7 @@ public class PassAvailables {
         // TODO: ORDER BY, LIMIT and SKIP needs to be handled here
         // TODO: will be the same as the one ran in 'cypher2sqlOnExpandedPaths'
 
-        // Last pass: Render the tree into SQL!
-        return query.toSQLString();
+        return query;
     }
 
     // This class shouldn't be instantiated.
