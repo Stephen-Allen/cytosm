@@ -34,22 +34,22 @@ public class ExprTree {
         }
     }
 
-    public static class Add extends LhsRhs { Add(Expr lhs, Expr rhs) { super(lhs, rhs); } public String toSQLString(RenderingContext helper) { return toSQLStringInfix("+", helper); } }
-    public static class Sub extends LhsRhs { Sub(Expr lhs, Expr rhs) { super(lhs, rhs); } public String toSQLString(RenderingContext helper) { return toSQLStringInfix("-", helper); } }
-    public static class Mod extends LhsRhs { Mod(Expr lhs, Expr rhs) { super(lhs, rhs); } public String toSQLString(RenderingContext helper) { return toSQLStringInfix("%", helper); } }
-    public static class Mul extends LhsRhs { Mul(Expr lhs, Expr rhs) { super(lhs, rhs); } public String toSQLString(RenderingContext helper) { return toSQLStringInfix("*", helper); } }
-    public static class Div extends LhsRhs { Div(Expr lhs, Expr rhs) { super(lhs, rhs); } public String toSQLString(RenderingContext helper) { return toSQLStringInfix("/", helper); } }
-    public static class Pow extends LhsRhs { Pow(Expr lhs, Expr rhs) { super(lhs, rhs); } public String toSQLString(RenderingContext helper) { return toSQLStringFunc("POWER", helper); } }
-    public static class Neq extends LhsRhs { Neq(Expr lhs, Expr rhs) { super(lhs, rhs); } public String toSQLString(RenderingContext helper) { return toSQLStringInfix("<>", helper); } }
+    public static class Add extends LhsRhs { public Add(Expr lhs, Expr rhs) { super(lhs, rhs); } public String toSQLString(RenderingContext helper) { return toSQLStringInfix("+", helper); } }
+    public static class Sub extends LhsRhs { public Sub(Expr lhs, Expr rhs) { super(lhs, rhs); } public String toSQLString(RenderingContext helper) { return toSQLStringInfix("-", helper); } }
+    public static class Mod extends LhsRhs { public Mod(Expr lhs, Expr rhs) { super(lhs, rhs); } public String toSQLString(RenderingContext helper) { return toSQLStringInfix("%", helper); } }
+    public static class Mul extends LhsRhs { public Mul(Expr lhs, Expr rhs) { super(lhs, rhs); } public String toSQLString(RenderingContext helper) { return toSQLStringInfix("*", helper); } }
+    public static class Div extends LhsRhs { public Div(Expr lhs, Expr rhs) { super(lhs, rhs); } public String toSQLString(RenderingContext helper) { return toSQLStringInfix("/", helper); } }
+    public static class Pow extends LhsRhs { public Pow(Expr lhs, Expr rhs) { super(lhs, rhs); } public String toSQLString(RenderingContext helper) { return toSQLStringFunc("POWER", helper); } }
+    public static class Neq extends LhsRhs { public Neq(Expr lhs, Expr rhs) { super(lhs, rhs); } public String toSQLString(RenderingContext helper) { return toSQLStringInfix("<>", helper); } }
     public static class Eq extends LhsRhs { public Eq(Expr lhs, Expr rhs) { super(lhs, rhs); } public String toSQLString(RenderingContext helper) { return toSQLStringInfix("=", helper); } }
     public static class And extends LhsRhs { public And(Expr lhs, Expr rhs) { super(lhs, rhs); } public String toSQLString(RenderingContext helper) { return toSQLStringInfix("AND", helper); } }
-    public static class Or extends LhsRhs { Or(Expr lhs, Expr rhs) { super(lhs, rhs); } public String toSQLString(RenderingContext helper) { return toSQLStringInfix("OR", helper); } }
-    public static class In extends LhsRhs { In(Expr lhs, Expr rhs) { super(lhs, rhs); } public String toSQLString(RenderingContext helper) { return toSQLStringInfix("IN", helper); } }
-    public static class Xor extends LhsRhs { Xor(Expr lhs, Expr rhs) { super(lhs, rhs); } public String toSQLString(RenderingContext helper) { return toSQLStringInfix("XOR", helper); } }
-    public static class LessThan extends LhsRhs { LessThan(Expr lhs, Expr rhs) { super(lhs, rhs); } public String toSQLString(RenderingContext helper) { return toSQLStringInfix("<", helper); } }
-    public static class LessThanOrEqual extends LhsRhs { LessThanOrEqual(Expr lhs, Expr rhs) { super(lhs, rhs); } public String toSQLString(RenderingContext helper) { return toSQLStringInfix("<=", helper); } }
-    public static class GreaterThan extends LhsRhs { GreaterThan(Expr lhs, Expr rhs) { super(lhs, rhs); } public String toSQLString(RenderingContext helper) { return toSQLStringInfix(">", helper); } }
-    public static class GreaterThanOrEqueal extends LhsRhs { GreaterThanOrEqueal(Expr lhs, Expr rhs) { super(lhs, rhs); } public String toSQLString(RenderingContext helper) { return toSQLStringInfix(">=", helper); } }
+    public static class Or extends LhsRhs { public Or(Expr lhs, Expr rhs) { super(lhs, rhs); } public String toSQLString(RenderingContext helper) { return toSQLStringInfix("OR", helper); } }
+    public static class In extends LhsRhs { public In(Expr lhs, Expr rhs) { super(lhs, rhs); } public String toSQLString(RenderingContext helper) { return toSQLStringInfix("IN", helper); } }
+    public static class Xor extends LhsRhs { public Xor(Expr lhs, Expr rhs) { super(lhs, rhs); } public String toSQLString(RenderingContext helper) { return toSQLStringInfix("XOR", helper); } }
+    public static class LessThan extends LhsRhs { public LessThan(Expr lhs, Expr rhs) { super(lhs, rhs); } public String toSQLString(RenderingContext helper) { return toSQLStringInfix("<", helper); } }
+    public static class LessThanOrEqual extends LhsRhs { public LessThanOrEqual(Expr lhs, Expr rhs) { super(lhs, rhs); } public String toSQLString(RenderingContext helper) { return toSQLStringInfix("<=", helper); } }
+    public static class GreaterThan extends LhsRhs { public GreaterThan(Expr lhs, Expr rhs) { super(lhs, rhs); } public String toSQLString(RenderingContext helper) { return toSQLStringInfix(">", helper); } }
+    public static class GreaterThanOrEqueal extends LhsRhs { public GreaterThanOrEqueal(Expr lhs, Expr rhs) { super(lhs, rhs); } public String toSQLString(RenderingContext helper) { return toSQLStringInfix(">=", helper); } }
 
     public static abstract class Unary implements Expr {
         public Expr unary;
