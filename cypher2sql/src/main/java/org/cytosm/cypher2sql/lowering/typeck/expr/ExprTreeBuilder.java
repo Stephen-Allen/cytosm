@@ -14,7 +14,6 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Iterator;
 import java.util.Optional;
-import java.util.stream.Collectors;
 
 /**
  */
@@ -191,7 +190,7 @@ public class ExprTreeBuilder {
 
         @Override
         public Expr foldGreaterThanOrEqual(GreaterThanOrEqual expression) throws ExprTreeException {
-            return new ExprTree.GreaterThanOrEqueal(
+            return new ExprTree.GreaterThanOrEqual(
                     Walk.foldExpression(this, expression.lhs),
                     Walk.foldExpression(this, expression.rhs));
 
@@ -283,20 +282,30 @@ public class ExprTreeBuilder {
 
         @Override
         public Expr foldRegexMatch(RegexMatch expression) throws ExprTreeException {
-            // FIXME
-            throw new UnimplementedException();
+            return new ExprTree.RegexMatch(
+                    Walk.foldExpression(this, expression.lhs),
+                    Walk.foldExpression(this, expression.rhs));
         }
 
         @Override
         public Expr foldStartsWith(StartsWith expression) throws ExprTreeException {
-            // FIXME
-            throw new UnimplementedException();
+            return new ExprTree.StartsWith(
+                Walk.foldExpression(this, expression.lhs),
+                Walk.foldExpression(this, expression.rhs));
         }
 
         @Override
         public Expr foldEndsWith(EndsWith expression) throws ExprTreeException {
-            // FIXME
-            throw new UnimplementedException();
+            return new ExprTree.EndsWith(
+                Walk.foldExpression(this, expression.lhs),
+                Walk.foldExpression(this, expression.rhs));
+        }
+
+        @Override
+        public Expr foldContains(Contains expression) throws ExprTreeException {
+            return new ExprTree.Contains(
+                Walk.foldExpression(this, expression.lhs),
+                Walk.foldExpression(this, expression.rhs));
         }
 
         @Override

@@ -649,6 +649,10 @@ public class ConstExpressionFolder implements Walk.ExpressionFolder<ConstExpress
         // FIXME
         throw new UnimplementedException();
     }
+    public ConstExprValue foldContains(final Contains expression) throws ConstExprException {
+        // FIXME
+        throw new UnimplementedException();
+    }
     public ConstExprValue foldIsNotNull(final Unary.IsNotNull expression) throws ConstExprException {
         // FIXME
         throw new UnimplementedException();

@@ -1,11 +1,8 @@
 package org.cytosm.cypher2sql.lowering.rendering;
 
 import org.cytosm.cypher2sql.lowering.sqltree.SQLNode;
-import org.cytosm.cypher2sql.lowering.sqltree.from.FromItem;
-import org.cytosm.cypher2sql.lowering.typeck.var.AliasVar;
-import org.cytosm.cypher2sql.lowering.typeck.var.Var;
 
-import java.util.List;
+import static org.cytosm.cypher2sql.utils.StringEscapeUtils.escape;
 
 /**
  * The rendering helper provides context to render
@@ -26,7 +23,7 @@ public class RenderingHelper {
      */
     public String renderEscapedColumnName(String alias) {
         // FIXME: for some RDBMS brackets ('[' and ']') might be preferred.
-        return "\"" + alias + "\"";
+        return "\"" + escapeForSqlIdentifier(alias) + "\"";
     }
 
     /**
@@ -38,6 +35,36 @@ public class RenderingHelper {
      */
     public String renderStringLiteral(String literal) {
         // FIXME: Again, we need the factory to have this behavior driver-specific.
-        return "'" + literal + "'";
+        return "'" + escapeForSqlLiteral(literal) + "'";
+    }
+
+    /**
+     * Escape a string for use as an SQL literal value.
+     *
+     * @param value the string to escape
+     * @return an escaped string
+     */
+    public String escapeForSqlIdentifier(final String value) {
+        return escape(value, new char[] { }, new char[] { '"' });
+    }
+
+    /**
+     * Escape a string for use as an SQL literal value.
+     *
+     * @param value the string to escape
+     * @return an escaped string
+     */
+    public String escapeForSqlLiteral(final String value) {
+        return escape(value, new char[] { '\'' });
+    }
+
+    /**
+     * Escape a string for use as an SQL LIKE value (escapes underscore and percent sign).
+     *
+     * @param value the string to escape
+     * @return an escaped string
+     */
+    public String escapeForSqlLike(final String value) {
+        return escape(value, new char[] {'_', '%' });
     }
 }

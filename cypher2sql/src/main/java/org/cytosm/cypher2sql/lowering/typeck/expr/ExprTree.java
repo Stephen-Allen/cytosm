@@ -49,7 +49,28 @@ public class ExprTree {
     public static class LessThan extends LhsRhs { public LessThan(Expr lhs, Expr rhs) { super(lhs, rhs); } public String toSQLString(RenderingContext helper) { return toSQLStringInfix("<", helper); } }
     public static class LessThanOrEqual extends LhsRhs { public LessThanOrEqual(Expr lhs, Expr rhs) { super(lhs, rhs); } public String toSQLString(RenderingContext helper) { return toSQLStringInfix("<=", helper); } }
     public static class GreaterThan extends LhsRhs { public GreaterThan(Expr lhs, Expr rhs) { super(lhs, rhs); } public String toSQLString(RenderingContext helper) { return toSQLStringInfix(">", helper); } }
-    public static class GreaterThanOrEqueal extends LhsRhs { public GreaterThanOrEqueal(Expr lhs, Expr rhs) { super(lhs, rhs); } public String toSQLString(RenderingContext helper) { return toSQLStringInfix(">=", helper); } }
+    public static class GreaterThanOrEqual extends LhsRhs { public GreaterThanOrEqual(Expr lhs, Expr rhs) { super(lhs, rhs); } public String toSQLString(RenderingContext helper) { return toSQLStringInfix(">=", helper); } }
+    public static class RegexMatch extends LhsRhs { public RegexMatch(Expr lhs, Expr rhs) { super(lhs, rhs); } public String toSQLString(RenderingContext helper) { return toSQLStringInfix("~", helper); } }
+    public static class StartsWith extends LhsRhs { public StartsWith(Expr lhs, Expr rhs) { super(lhs, rhs); } public String toSQLString(RenderingContext helper) { return toSQLStringInfix("^@", helper); } }
+    public static class EndsWith extends LhsRhs { public EndsWith(Expr lhs, Expr rhs) { super(lhs, rhs); } public String toSQLString(RenderingContext helper) {
+        final RenderingContext customCtx = new RenderingContext(helper.fromItems, helper.location) {
+            @Override
+            public String renderStringLiteral(String literal) {
+                return helper.renderStringLiteral("%" + helper.escapeForSqlLike(literal));
+            }
+        };
+        return String.format("(%s LIKE %s)", this.lhs.toSQLString(helper), this.rhs.toSQLString(customCtx)); }
+    }
+    public static class Contains extends LhsRhs { public Contains(Expr lhs, Expr rhs) { super(lhs, rhs); } public String toSQLString(RenderingContext helper) {
+        final RenderingContext customCtx = new RenderingContext(helper.fromItems, helper.location) {
+            @Override
+            public String renderStringLiteral(String literal) {
+                return helper.renderStringLiteral("%" + helper.escapeForSqlLike(literal) + "%");
+            }
+        };
+        return String.format("(%s LIKE %s)", this.lhs.toSQLString(helper), this.rhs.toSQLString(customCtx)); }
+    }
+
 
     public static abstract class Unary implements Expr {
         public Expr unary;

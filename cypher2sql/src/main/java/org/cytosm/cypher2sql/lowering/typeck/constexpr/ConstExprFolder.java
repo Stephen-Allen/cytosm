@@ -1,11 +1,9 @@
 package org.cytosm.cypher2sql.lowering.typeck.constexpr;
 
 import org.cytosm.cypher2sql.lowering.exceptions.Cypher2SqlException;
-import org.cytosm.cypher2sql.lowering.typeck.expr.ExprTree;
 import org.cytosm.cypher2sql.lowering.typeck.expr.ExprVar;
 import org.cytosm.cypher2sql.lowering.typeck.types.MapType;
 import org.cytosm.cypher2sql.lowering.typeck.var.AliasVar;
-import org.cytosm.cypher2sql.lowering.typeck.var.Var;
 import org.cytosm.cypher2sql.lowering.typeck.expr.ExprFn;
 import org.cytosm.cypher2sql.lowering.typeck.expr.ExprTree.*;
 import org.cytosm.cypher2sql.lowering.typeck.expr.ExprWalk;
@@ -27,7 +25,7 @@ public class ConstExprFolder implements ExprWalk.Folder<ConstVal.Literal, Cypher
             return ExprWalk.fold(this, expr.lhs).eq(ExprWalk.fold(this, expr.rhs));
         } else if (expr instanceof GreaterThan) {
             return ExprWalk.fold(this, expr.lhs).gt(ExprWalk.fold(this, expr.rhs));
-        } else if (expr instanceof GreaterThanOrEqueal) {
+        } else if (expr instanceof GreaterThanOrEqual) {
             return ExprWalk.fold(this, expr.lhs).gteq(ExprWalk.fold(this, expr.rhs));
         } else if (expr instanceof In) {
             throw new UnknownOperation("In");
@@ -49,6 +47,14 @@ public class ConstExprFolder implements ExprWalk.Folder<ConstVal.Literal, Cypher
             return ExprWalk.fold(this, expr.lhs).sub(ExprWalk.fold(this, expr.rhs));
         } else if (expr instanceof Xor) {
             return ExprWalk.fold(this, expr.lhs).xor(ExprWalk.fold(this, expr.rhs));
+        } else if (expr instanceof RegexMatch) {
+            throw new UnknownOperation("RegexMatch");
+        } else if (expr instanceof StartsWith) {
+            throw new UnknownOperation("StartsWith");
+        } else if (expr instanceof EndsWith) {
+            throw new UnknownOperation("EndsWith");
+        } else if (expr instanceof Contains) {
+            throw new UnknownOperation("Contains");
         }
         throw new UnknownOperation("Unreachable code reached");
     }

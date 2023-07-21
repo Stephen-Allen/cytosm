@@ -7,7 +7,6 @@ import org.cytosm.cypher2sql.lowering.exceptions.Unimplemented;
 import org.cytosm.cypher2sql.lowering.typeck.expr.*;
 import org.cytosm.cypher2sql.lowering.typeck.types.*;
 import org.cytosm.cypher2sql.lowering.typeck.var.AliasVar;
-import org.cytosm.cypher2sql.lowering.typeck.var.Var;
 import org.cytosm.cypher2sql.lowering.typeck.constexpr.ConstVal;
 
 import static org.cytosm.cypher2sql.lowering.exceptions.fns.LambdaExceptionUtil.rethrowConsumer;
@@ -42,7 +41,7 @@ public class ComputeAliasVarType {
         public AType foldBinaryOperator(ExprTree.LhsRhs expr) throws Cypher2SqlException {
             // FIXME: this doesn't check the entire expression
             if (expr instanceof ExprTree.GreaterThan ||
-                expr instanceof ExprTree.GreaterThanOrEqueal ||
+                expr instanceof ExprTree.GreaterThanOrEqual ||
                 expr instanceof ExprTree.LessThan ||
                 expr instanceof ExprTree.LessThanOrEqual ||
                 expr instanceof ExprTree.In ||
@@ -50,7 +49,11 @@ public class ComputeAliasVarType {
                 expr instanceof ExprTree.Xor ||
                 expr instanceof ExprTree.And ||
                 expr instanceof ExprTree.Eq ||
-                expr instanceof ExprTree.Neq) {
+                expr instanceof ExprTree.Neq ||
+                expr instanceof ExprTree.RegexMatch ||
+                expr instanceof ExprTree.StartsWith ||
+                expr instanceof ExprTree.EndsWith ||
+                expr instanceof ExprTree.Contains) {
                 return new BoolType();
             }
             return merge(ExprWalk.fold(this, expr.lhs), ExprWalk.fold(this, expr.rhs));

@@ -1,7 +1,6 @@
 package org.cytosm.cypher2sql.lowering.typeck.expr;
 
 import org.cytosm.cypher2sql.lowering.typeck.var.AliasVar;
-import org.cytosm.cypher2sql.lowering.typeck.var.Var;
 import org.cytosm.cypher2sql.lowering.typeck.constexpr.ConstVal;
 import org.apache.commons.lang3.tuple.ImmutablePair;
 import org.apache.commons.lang3.tuple.Pair;
@@ -154,8 +153,8 @@ public class ExprWalk {
                 return new ExprTree.Eq(fold(this, expr.lhs), fold(this, expr.rhs));
             } else if (expr instanceof ExprTree.GreaterThan) {
                 return new ExprTree.GreaterThan(fold(this, expr.lhs), fold(this, expr.rhs));
-            } else if (expr instanceof ExprTree.GreaterThanOrEqueal) {
-                return new ExprTree.GreaterThanOrEqueal(fold(this, expr.lhs), fold(this, expr.rhs));
+            } else if (expr instanceof ExprTree.GreaterThanOrEqual) {
+                return new ExprTree.GreaterThanOrEqual(fold(this, expr.lhs), fold(this, expr.rhs));
             } else if (expr instanceof ExprTree.In) {
                 return new ExprTree.In(fold(this, expr.lhs), fold(this, expr.rhs));
             } else if (expr instanceof ExprTree.LessThan) {
@@ -176,6 +175,14 @@ public class ExprWalk {
                 return new ExprTree.Sub(fold(this, expr.lhs), fold(this, expr.rhs));
             } else if (expr instanceof ExprTree.Xor) {
                 return new ExprTree.Xor(fold(this, expr.lhs), fold(this, expr.rhs));
+            } else if (expr instanceof ExprTree.RegexMatch) {
+                return new ExprTree.RegexMatch(fold(this, expr.lhs), fold(this, expr.rhs));
+            } else if (expr instanceof ExprTree.StartsWith) {
+                return new ExprTree.StartsWith(fold(this, expr.lhs), fold(this, expr.rhs));
+            } else if (expr instanceof ExprTree.EndsWith) {
+                return new ExprTree.EndsWith(fold(this, expr.lhs), fold(this, expr.rhs));
+            } else if (expr instanceof ExprTree.Contains) {
+                return new ExprTree.Contains(fold(this, expr.lhs), fold(this, expr.rhs));
             } else {
                 // With proper sum types this wouldn't be needed.
                 throw new RuntimeException("Unreachable code reached!");

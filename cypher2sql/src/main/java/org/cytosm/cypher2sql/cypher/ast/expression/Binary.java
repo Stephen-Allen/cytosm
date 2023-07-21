@@ -89,6 +89,12 @@ public abstract class Binary extends Unary {
             super(lhs, rhs);
         }
     }
+    public static class Contains extends Binary {
+
+        public Contains(Expression lhs, Expression rhs) {
+            super(lhs, rhs);
+        }
+    }
     public static class In extends Binary {
 
         public In(Expression lhs, Expression rhs) {
@@ -128,12 +134,6 @@ public abstract class Binary extends Unary {
     public static class Pow extends Binary {
 
         public Pow(Expression lhs, Expression rhs) {
-            super(lhs, rhs);
-        }
-    }
-    public static class Contains extends Binary {
-
-        public Contains(Expression lhs, Expression rhs) {
             super(lhs, rhs);
         }
     }

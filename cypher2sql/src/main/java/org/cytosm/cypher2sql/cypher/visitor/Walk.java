@@ -66,6 +66,7 @@ public class Walk {
         void visitRegexMatch(RegexMatch expression);
         void visitStartsWith(StartsWith expression);
         void visitEndsWith(EndsWith expression);
+        void visitContains(Contains contains);
         void visitIsNotNull(Unary.IsNotNull expression);
     }
 
@@ -270,6 +271,8 @@ public class Walk {
             visitor.visitStartsWith((StartsWith) expression);
         } else if (expression instanceof EndsWith) {
             visitor.visitEndsWith((EndsWith) expression);
+        } else if (expression instanceof Contains) {
+            visitor.visitContains((Contains) expression);
         } else if (expression instanceof In) {
             visitor.visitIn((In) expression);
 
@@ -598,6 +601,12 @@ public class Walk {
         }
 
         @Override
+        public void visitContains(Contains expression) {
+            Walk.walkExpression(this, expression.lhs);
+            Walk.walkExpression(this, expression.rhs);
+        }
+
+        @Override
         public void visitIn(In expression) {
             Walk.walkExpression(this, expression.lhs);
             Walk.walkExpression(this, expression.rhs);
@@ -673,6 +682,7 @@ public class Walk {
         T foldRegexMatch(RegexMatch  expression) throws E;
         T foldStartsWith(StartsWith  expression) throws E;
         T foldEndsWith(EndsWith  expression) throws E;
+        T foldContains(Contains  expression) throws E;
         T foldIsNotNull(Unary.IsNotNull  expression) throws E;
         T foldStringLiteral(final Literal.StringLiteral stringLiteral) throws E;
         T foldDecimalDoubleLiteral(final Literal.DecimalDouble decimalDoubleLiteral) throws E;
@@ -785,6 +795,8 @@ public class Walk {
             return folder.foldStartsWith((StartsWith) expression);
         } else if (expression instanceof EndsWith) {
             return folder.foldEndsWith((EndsWith) expression);
+        } else if (expression instanceof Contains) {
+            return folder.foldContains((Contains) expression);
         } else if (expression instanceof In) {
             return folder.foldIn((In) expression);
 
