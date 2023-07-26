@@ -4,7 +4,7 @@ import java.util.Comparator;
 import java.util.List;
 import java.util.Map;
 
-import org.cytosm.common.gtop.GTopInterfaceImpl;
+import org.cytosm.common.gtop.GTopInterface;
 import org.cytosm.pathfinder.enumerators.DirectedEnumerator;
 import org.cytosm.pathfinder.enumerators.EnumeratorDriver;
 import org.cytosm.pathfinder.enumerators.UndirectedEnumerator;
@@ -46,7 +46,7 @@ public class PathFinder {
      * @param gTopInter gTop interface
      * @return all valid routes that would match the relationship chain and the gTop file.
      */
-    public CanonicalRoutes enumerate(final String input, final GTopInterfaceImpl gTopInter) {
+    public CanonicalRoutes enumerate(final String input, final GTopInterface gTopInter) {
 
         // Generate a list of possible paths, before consulting Gtop. More than one possibility
         // exists due to wild-card expansion.
@@ -71,7 +71,7 @@ public class PathFinder {
      *        relationship chain.
      * @return all valid routes that would match the relationship chain and the gTop file.
      */
-    public CanonicalRoutes enumerate(final String input, final GTopInterfaceImpl gTopInter,
+    public CanonicalRoutes enumerate(final String input, final GTopInterface gTopInter,
             final Map<String, List<String>> externalContextHint) {
 
         // Add extra context to translation:
@@ -89,7 +89,7 @@ public class PathFinder {
      * @return The possible routes that respect the input and the gtop context.
      */
     public CanonicalRoutes evaluateEnumerationStrategy(final CanonicalRoutes routeWithSolvedWildcards,
-            final GTopInterfaceImpl gTopInter) {
+            final GTopInterface gTopInter) {
 
         boolean hasNodeHints = false;
         boolean hasEdgeHints = false;

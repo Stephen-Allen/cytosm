@@ -5,7 +5,7 @@ import java.util.List;
 import java.util.Stack;
 import java.util.stream.Collectors;
 
-import org.cytosm.common.gtop.GTopInterfaceImpl;
+import org.cytosm.common.gtop.GTopInterface;
 import org.cytosm.common.gtop.abstraction.AbstractionEdge;
 import org.cytosm.common.gtop.abstraction.AbstractionGraphComponent;
 import org.cytosm.common.gtop.abstraction.AbstractionNode;
@@ -34,7 +34,7 @@ public class UndirectedEnumerator extends AbstractEnumerator {
      * @param gtopInterface the gtop interface
      */
     public UndirectedEnumerator(boolean hasEdgeHints, boolean hasNodeHints, boolean hasVariables,
-            GTopInterfaceImpl gtopInterface) {
+            GTopInterface gtopInterface) {
         super(hasEdgeHints, hasNodeHints, hasVariables, gtopInterface);
     }
 
@@ -48,7 +48,7 @@ public class UndirectedEnumerator extends AbstractEnumerator {
      * @param route route to expand.
      */
     public UndirectedEnumerator(boolean hasEdgeHints, boolean hasNodeHints, boolean hasVariables,
-            GTopInterfaceImpl gtopInterface, List<ExpansionElement> route) {
+                                GTopInterface gtopInterface, List<ExpansionElement> route) {
         super(hasEdgeHints, hasNodeHints, hasVariables, gtopInterface);
         toBeExpandedRoute = route;
     }

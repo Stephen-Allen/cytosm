@@ -1,6 +1,6 @@
 package org.cytosm.cypher2sql.lowering;
 
-import org.cytosm.common.gtop.GTopInterfaceImpl;
+import org.cytosm.common.gtop.GTopInterface;
 import org.cytosm.common.gtop.implementation.relational.ImplementationNode;
 import org.cytosm.cypher2sql.lowering.exceptions.BugFound;
 import org.cytosm.cypher2sql.lowering.exceptions.Cypher2SqlException;
@@ -39,7 +39,7 @@ public class ExpandNodeVarWithGtop {
      * @param gTopInterface is the gtop implementation.
      * @return Returns the new SQL tree.
      */
-    public static ScopeSelect computeTableNamesOnFromItems(ScopeSelect sqltree, GTopInterfaceImpl gTopInterface)
+    public static ScopeSelect computeTableNamesOnFromItems(ScopeSelect sqltree, GTopInterface gTopInterface)
             throws Cypher2SqlException
     {
 
@@ -78,9 +78,9 @@ public class ExpandNodeVarWithGtop {
      */
     private static class ExpandSelectInUnionAndComputeTableNames extends Walk.IdentityFolder<Cypher2SqlException> {
 
-        final GTopInterfaceImpl gTopInterface;
+        final GTopInterface gTopInterface;
 
-        ExpandSelectInUnionAndComputeTableNames(final GTopInterfaceImpl gTopInterface) {
+        ExpandSelectInUnionAndComputeTableNames(final GTopInterface gTopInterface) {
             this.gTopInterface = gTopInterface;
         }
 

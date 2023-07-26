@@ -14,7 +14,7 @@ import org.cytosm.common.gtop.implementation.relational.ImplementationNode;
  * Default interface to access a gtop file.
  *
  */
-interface GTopInterface {
+public interface GTopInterface {
 
     /**
      * @return the version

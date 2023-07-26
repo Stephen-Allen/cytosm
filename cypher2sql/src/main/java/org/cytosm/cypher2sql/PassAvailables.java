@@ -1,6 +1,6 @@
 package org.cytosm.cypher2sql;
 
-import org.cytosm.common.gtop.GTopInterfaceImpl;
+import org.cytosm.common.gtop.GTopInterface;
 import org.cytosm.cypher2sql.expandpaths.ExpandCypher;
 import org.cytosm.cypher2sql.lowering.*;
 import org.cytosm.cypher2sql.lowering.exceptions.Cypher2SqlException;
@@ -46,7 +46,7 @@ public class PassAvailables {
      * @param cypher is the cypher to convert.
      * @return Returns a SQL tree.
      */
-    public static ScopeSelect cypher2sqlOnExpandedPaths(final GTopInterfaceImpl gTopInterface, String cypher)
+    public static ScopeSelect cypher2sqlOnExpandedPaths(final GTopInterface gTopInterface, String cypher)
             throws Cypher2SqlException
     {
         // First pass, convert the cypher into an AST.
@@ -152,7 +152,7 @@ public class PassAvailables {
      * @param originalCypher cypher string to convert to sql
      * @return SQL statement or empty if it doesnt parse.
      */
-    public static String cypher2sql(final GTopInterfaceImpl gtopInterface, final String originalCypher) throws Cypher2SqlException {
+    public static String cypher2sql(final GTopInterface gtopInterface, final String originalCypher) throws Cypher2SqlException {
         // Last pass: Render the tree into SQL!
         final ScopeSelect query = cypher2sqlTree(gtopInterface, originalCypher);
         return query.toSQLString();
@@ -166,7 +166,7 @@ public class PassAvailables {
      * @param originalCypher cypher string to convert to sql
      * @return Returns a SQL tree.
      */
-    public static ScopeSelect cypher2sqlTree(final GTopInterfaceImpl gtopInterface, final String originalCypher) throws Cypher2SqlException {
+    public static ScopeSelect cypher2sqlTree(final GTopInterface gtopInterface, final String originalCypher) throws Cypher2SqlException {
         List<String> cyphers = ExpandCypher.expandCypher(gtopInterface, originalCypher);
 
         List<ScopeSelect> allQ = cyphers.stream()

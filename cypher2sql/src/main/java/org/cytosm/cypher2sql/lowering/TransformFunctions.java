@@ -1,6 +1,6 @@
 package org.cytosm.cypher2sql.lowering;
 
-import org.cytosm.common.gtop.GTopInterfaceImpl;
+import org.cytosm.common.gtop.GTopInterface;
 import org.cytosm.common.gtop.implementation.relational.ImplementationNode;
 import org.cytosm.cypher2sql.lowering.exceptions.Cypher2SqlException;
 import org.cytosm.cypher2sql.lowering.sqltree.ScopeSelect;
@@ -38,7 +38,7 @@ public class TransformFunctions {
      * @param tree is the SQL tree where COUNT will be updated.
      * @param gTopInterface is the implementation gTop.
      */
-    public static void convertCypherCountFn(ScopeSelect tree, GTopInterfaceImpl gTopInterface)
+    public static void convertCypherCountFn(ScopeSelect tree, GTopInterface gTopInterface)
             throws Cypher2SqlException
     {
         HashMap<ScopeSelect, Boolean> scopeIsLeaf = new HashMap<>();
@@ -76,9 +76,9 @@ public class TransformFunctions {
 
         private static final String COUNT = "count";
         private final HashMap<ScopeSelect, Boolean> scopeIsLeaf;
-        private final GTopInterfaceImpl gtop;
+        private final GTopInterface gtop;
 
-        CountVisitor(HashMap<ScopeSelect, Boolean> scopeIsLeaf, GTopInterfaceImpl gtop) {
+        CountVisitor(HashMap<ScopeSelect, Boolean> scopeIsLeaf, GTopInterface gtop) {
             this.scopeIsLeaf = scopeIsLeaf;
             this.gtop = gtop;
         }
@@ -110,9 +110,9 @@ public class TransformFunctions {
 
         private final String fnCypherName;
         private final ExprFn.Name fnName;
-        private final GTopInterfaceImpl gtop;
+        private final GTopInterface gtop;
 
-        NameFnExpr(GTopInterfaceImpl gtop, String fnCypherName, ExprFn.Name fnName) {
+        NameFnExpr(GTopInterface gtop, String fnCypherName, ExprFn.Name fnName) {
             this.gtop = gtop;
             this.fnCypherName = fnCypherName;
             this.fnName = fnName;

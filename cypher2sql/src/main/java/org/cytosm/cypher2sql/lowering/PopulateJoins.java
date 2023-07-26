@@ -1,6 +1,6 @@
 package org.cytosm.cypher2sql.lowering;
 
-import org.cytosm.common.gtop.GTopInterfaceImpl;
+import org.cytosm.common.gtop.GTopInterface;
 import org.cytosm.common.gtop.implementation.relational.ImplementationEdge;
 import org.cytosm.common.gtop.implementation.relational.TraversalHop;
 import org.cytosm.cypher2sql.lowering.exceptions.BugFound;
@@ -45,7 +45,7 @@ public class PopulateJoins {
      * @param vars contains all the information about variable in the original cypher.
      * @param gTopInterface is the gtop implementation.
      */
-    public static ScopeSelect populateJoins(ScopeSelect sqltree, VarDependencies vars, GTopInterfaceImpl gTopInterface)
+    public static ScopeSelect populateJoins(ScopeSelect sqltree, VarDependencies vars, GTopInterface gTopInterface)
             throws Cypher2SqlException
     {
 
@@ -103,9 +103,9 @@ public class PopulateJoins {
     private static class ExpandRelsAsJoins extends Walk.BaseSQLNodeVisitor {
 
         private final VarDependencies vars;
-        private final GTopInterfaceImpl gTopInterface;
+        private final GTopInterface gTopInterface;
 
-        ExpandRelsAsJoins(final VarDependencies vars, GTopInterfaceImpl gTopInterface) {
+        ExpandRelsAsJoins(final VarDependencies vars, GTopInterface gTopInterface) {
             this.vars = vars;
             this.gTopInterface = gTopInterface;
         }

@@ -5,7 +5,7 @@ import java.util.Collections;
 import java.util.List;
 import java.util.stream.Collectors;
 
-import org.cytosm.common.gtop.GTopInterfaceImpl;
+import org.cytosm.common.gtop.GTopInterface;
 import org.cytosm.common.gtop.abstraction.AbstractionEdge;
 import org.cytosm.common.gtop.abstraction.AbstractionGraphComponent;
 import org.cytosm.common.gtop.abstraction.AbstractionNode;
@@ -45,7 +45,7 @@ public abstract class AbstractEnumerator {
     /***
      * GTop file used when enumerating route.
      */
-    protected GTopInterfaceImpl gTopInter;
+    protected GTopInterface gTopInter;
 
     /***
      * If the implementation class follows or not directed edges.
@@ -68,7 +68,7 @@ public abstract class AbstractEnumerator {
      * @param gImp the gtop interface used.
      */
     public AbstractEnumerator(final boolean hasEdgeHints, final boolean hasNodeHints, final boolean hasVariables,
-            final GTopInterfaceImpl gImp) {
+            final GTopInterface gImp) {
         this.hasEdgeHints = hasEdgeHints;
         this.hasNodeHints = hasNodeHints;
         this.hasVariables = hasVariables;
@@ -502,7 +502,7 @@ public abstract class AbstractEnumerator {
      * @return
      */
     private List<AbstractionEdge> findTraversableEdges(final AbstractionNode currentNode,
-            final List<ExpansionElement> originalRoute, final int analysingIndex, final GTopInterfaceImpl gtopInter) {
+            final List<ExpansionElement> originalRoute, final int analysingIndex, final GTopInterface gtopInter) {
 
         final ExpansionEdge routeEdge = (ExpansionEdge) originalRoute.get(analysingIndex + 1);
 

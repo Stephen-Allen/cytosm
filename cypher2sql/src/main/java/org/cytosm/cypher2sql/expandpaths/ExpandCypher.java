@@ -7,11 +7,11 @@ import java.util.Map;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
+import org.cytosm.common.gtop.GTopInterface;
 import org.cytosm.pathfinder.PathFinder;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.log4j.Logger;
 
-import org.cytosm.common.gtop.GTopInterfaceImpl;
 import org.cytosm.pathfinder.CanonicalRoutes;
 import org.cytosm.pathfinder.output.PathSerializer;
 import org.cytosm.pathfinder.output.Serializer;
@@ -66,7 +66,7 @@ public final class ExpandCypher {
      * @param queryStr Cypher query to expand
      * @return List of cypher queries this query have become having been expanded
      */
-    public static List<String> expandCypher(final GTopInterfaceImpl gtopInterface, final String queryStr) {
+    public static List<String> expandCypher(final GTopInterface gtopInterface, final String queryStr) {
         String query = queryStr.trim();
 
         ExtractPath extractPath = new ExtractPath();

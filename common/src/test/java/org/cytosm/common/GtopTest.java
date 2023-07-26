@@ -8,6 +8,7 @@ import java.util.Arrays;
 import java.util.List;
 
 import org.apache.commons.io.FileUtils;
+import org.cytosm.common.gtop.GTopInterface;
 import org.cytosm.common.gtop.implementation.graphmetadata.BackendSystem;
 import org.junit.After;
 import org.junit.Assert;
@@ -15,7 +16,6 @@ import org.junit.Test;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.cytosm.common.gtop.GTop;
-import org.cytosm.common.gtop.GTopInterfaceImpl;
 import org.cytosm.common.gtop.RelationalGTopInterface;
 import org.cytosm.common.gtop.abstraction.AbstractionEdge;
 import org.cytosm.common.gtop.abstraction.AbstractionLevelGtop;
@@ -142,7 +142,7 @@ public class GtopTest {
 
         GTop gTop = new GTop(abslevel, implevel);
 
-        GTopInterfaceImpl gInterface = new RelationalGTopInterface(gTop);
+        GTopInterface gInterface = new RelationalGTopInterface(gTop);
 
         // Object to JSON in String - pretty-printed
         String jsonInString = SerializationInterface.toPrettyString(gTop);
@@ -154,7 +154,7 @@ public class GtopTest {
         System.out.println(jsonInString);
 
         // Read value from screen
-        GTopInterfaceImpl gInterfaceFromString = new RelationalGTopInterface(jsonInString);
+        GTopInterface gInterfaceFromString = new RelationalGTopInterface(jsonInString);
 
         // Check the integrity of reading value back ...
 

@@ -5,12 +5,11 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Stack;
-import java.util.TreeMap;
 import java.util.stream.Collectors;
 
 import org.apache.log4j.Logger;
 
-import org.cytosm.common.gtop.GTopInterfaceImpl;
+import org.cytosm.common.gtop.GTopInterface;
 import org.cytosm.common.gtop.abstraction.AbstractionGraphComponent;
 import org.cytosm.common.gtop.abstraction.AbstractionNode;
 import org.cytosm.pathfinder.routeelements.ExpansionElement;
@@ -47,7 +46,7 @@ public class DirectedEnumerator extends AbstractEnumerator {
      * @param route route to expand.
      */
     public DirectedEnumerator(final boolean hasEdgeHints, final boolean hasNodeHints, final boolean hasVariables,
-            final GTopInterfaceImpl gtopInterface, final List<ExpansionElement> route) {
+                              final GTopInterface gtopInterface, final List<ExpansionElement> route) {
         super(hasEdgeHints, hasNodeHints, hasVariables, gtopInterface);
 
         toBeExpandedRoute = route;

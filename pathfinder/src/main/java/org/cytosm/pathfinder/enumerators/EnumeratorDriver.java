@@ -3,7 +3,7 @@ package org.cytosm.pathfinder.enumerators;
 import java.util.ArrayList;
 import java.util.List;
 
-import org.cytosm.common.gtop.GTopInterfaceImpl;
+import org.cytosm.common.gtop.GTopInterface;
 import org.cytosm.pathfinder.CanonicalRoutes;
 import org.cytosm.pathfinder.routeelements.ExpansionElement;
 
@@ -56,7 +56,7 @@ public class EnumeratorDriver {
      * @param wildCardResolvedRoute the route with all possible edge expansions already solved.
      */
     public void launch(final boolean hasEdgeHints, final boolean hasNodeHints, final boolean hasVariables,
-            final GTopInterfaceImpl gTopInter, final CanonicalRoutes wildCardResolvedRoute) {
+                       final GTopInterface gTopInter, final CanonicalRoutes wildCardResolvedRoute) {
 
         for (List<ExpansionElement> route : wildCardResolvedRoute.getAllPossibleRoutes()) {
             // TODO Use getInstance?

@@ -1,6 +1,6 @@
 package org.cytosm.cypher2sql.lowering;
 
-import org.cytosm.common.gtop.GTopInterfaceImpl;
+import org.cytosm.common.gtop.GTopInterface;
 import org.cytosm.common.gtop.RelationalGTopInterface;
 import org.cytosm.cypher2sql.PassAvailables;
 import org.apache.commons.io.FileUtils;
@@ -16,7 +16,7 @@ import java.io.IOException;
  */
 public class StressTests {
 
-    private GTopInterfaceImpl getGTopInterface() throws IOException {
+    private GTopInterface getGTopInterface() throws IOException {
         String path = "src" + File.separatorChar + "test" + File.separatorChar + "resources";
         String jsonInString = FileUtils.readFileToString(new File(path + "/northwind.gtop"));
         return new RelationalGTopInterface(jsonInString);
@@ -25,7 +25,7 @@ public class StressTests {
 
     @Test
     public void testMatchWithWithWithWithWith() throws Exception {
-        GTopInterfaceImpl gTopInterface = getGTopInterface();
+        GTopInterface gTopInterface = getGTopInterface();
         String query =
                 "MATCH (person:Employees) " +
                         "WITH person " +
@@ -39,7 +39,7 @@ public class StressTests {
 
     @Test
     public void testMatchWithMatchWithWithWith() throws Exception {
-        GTopInterfaceImpl gTopInterface = getGTopInterface();
+        GTopInterface gTopInterface = getGTopInterface();
         String query =
                 "MATCH (person:Employees) " +
                         "WITH person " +
