@@ -1,11 +1,16 @@
 package org.cytosm.common.gtop;
 
+import java.io.File;
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 import java.util.stream.Collectors;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.core.JsonParseException;
+import com.fasterxml.jackson.databind.JsonMappingException;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import org.cytosm.common.gtop.abstraction.AbstractionEdge;
 import org.cytosm.common.gtop.abstraction.AbstractionLevelGtop;
 import org.cytosm.common.gtop.abstraction.AbstractionNode;
@@ -23,7 +28,43 @@ public abstract class GTopInterfaceImpl implements GTopInterface {
     /**
      * Gtop that is being accessed.
      */
-    protected GTop gtop = null;
+    protected final GTop gtop;
+
+    // Constructors:
+    /***
+     * Default constructor.
+     *
+     * @param gtopLoaded loaded gtop
+     */
+    public GTopInterfaceImpl(final GTop gtopLoaded) {
+        gtop = gtopLoaded;
+    }
+
+    /**
+     * Reads GTop from a file.
+     *
+     * @param fileObj gtop file
+     * @throws IOException I/O Exception
+     * @throws JsonMappingException JsonMappingException
+     * @throws JsonParseException JsonParseException
+     */
+    public GTopInterfaceImpl(final File fileObj) throws JsonParseException, JsonMappingException, IOException {
+        ObjectMapper mapper = new ObjectMapper();
+        gtop = mapper.readValue(fileObj, GTop.class);
+    }
+
+
+    /**
+     * Reads Gtop from a string.
+     *
+     * @param gTopStr gtop file in a string
+     */
+    public GTopInterfaceImpl(final String gTopStr) throws IOException {
+        ObjectMapper mapper = new ObjectMapper();
+        System.out.println("Printing gtop: " + gTopStr);
+        gtop = mapper.readValue(gTopStr, GTop.class);
+    }
+
 
     // Interface Implementation:
 
@@ -418,5 +459,44 @@ public abstract class GTopInterfaceImpl implements GTopInterface {
     @Override
     @JsonIgnore
     public abstract ImplementationEdge findEdgeImplementation(final AbstractionEdge edge);
+
+
+    // Utils:
+    /**
+     * pretty prints the Gtop to JSON String.
+     *
+     * @param gfile gtop to be transfored to JSON String.
+     * @return JSON String
+     */
+    public static String toPrettyString(final GTop gfile) {
+        ObjectMapper mapper = new ObjectMapper();
+        try {
+            return mapper.writerWithDefaultPrettyPrinter().writeValueAsString(gfile);
+        } catch (Exception ex) {
+            return gfile.toString();
+        }
+    }
+
+    @Override
+    public AbstractionNode createAbstractionNodeFromImplementation(final ImplementationNode node) {
+        List<String> attributsList = node.getAttributes().stream().map(attribute -> attribute.getAbstractionLevelName())
+            .collect(Collectors.toList());
+        return new AbstractionNode(node.getTypes(), attributsList);
+    }
+
+    @Override
+    public AbstractionEdge createAbstractionEdgeFromImplementation(final ImplementationEdge edge) {
+
+        final List<String> attributesList = new ArrayList<>();
+        // populate attribute List
+        edge.getPaths().forEach(path -> path.getTraversalHops().forEach(hop -> hop.getAttributes()
+            .forEach(attribute -> attributesList.add(attribute.getAbstractionLevelName()))));
+
+        // Removes duplicates
+        List<String> filteredAttributes = attributesList.stream().distinct().collect(Collectors.toList());
+
+        return new AbstractionEdge(edge.getTypes(), filteredAttributes, new ArrayList<String>(),
+            new ArrayList<String>(), false);
+    }
 
 }

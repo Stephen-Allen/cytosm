@@ -32,7 +32,7 @@ public class RelationalGTopInterface extends GTopInterfaceImpl {
      * @param gtopLoaded loaded gtop
      */
     public RelationalGTopInterface(final GTop gtopLoaded) {
-        gtop = gtopLoaded;
+        super(gtopLoaded);
     }
 
     /**
@@ -44,15 +44,7 @@ public class RelationalGTopInterface extends GTopInterfaceImpl {
      * @throws JsonParseException JsonParseException
      */
     public RelationalGTopInterface(final File fileObj) throws JsonParseException, JsonMappingException, IOException {
-
-        GTop gtopLoaded = null;
-
-        ObjectMapper mapper = new ObjectMapper();
-
-        gtopLoaded = mapper.readValue(fileObj, GTop.class);
-
-        gtop = gtopLoaded;
-
+        super(fileObj);
     }
 
 
@@ -61,37 +53,10 @@ public class RelationalGTopInterface extends GTopInterfaceImpl {
      *
      * @param gTopStr gtop file in a string
      */
-    public RelationalGTopInterface(final String gTopStr) {
-
-        GTop gtopLoaded = null;
-
-        ObjectMapper mapper = new ObjectMapper();
-        try {
-            System.out.println("Printing gtop: " + gTopStr);
-            gtopLoaded = mapper.readValue(gTopStr, GTop.class);
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
-        gtop = gtopLoaded;
+    public RelationalGTopInterface(final String gTopStr) throws IOException {
+        super(gTopStr);
     }
 
-
-    // API:
-    /**
-     * @return the version
-     */
-    @Override
-    public String getVersion() {
-        return gtop.getVersion();
-    }
-
-    /**
-     * @return the implementationLevel
-     */
-    @Override
-    public ImplementationLevelGtop getImplementationLevel() {
-        return gtop.getImplementationLevel();
-    }
 
     /**
      * @return the implementation nodes
@@ -217,41 +182,4 @@ public class RelationalGTopInterface extends GTopInterfaceImpl {
         return implementation;
     }
 
-    // Utils:
-    /**
-     * pretty prints the Gtop to JSON String.
-     *
-     * @param gfile gtop to be transfored to JSON String.
-     * @return JSON String
-     */
-    public static String toPrettyString(final GTop gfile) {
-        ObjectMapper mapper = new ObjectMapper();
-        try {
-            return mapper.writerWithDefaultPrettyPrinter().writeValueAsString(gfile);
-        } catch (Exception ex) {
-            return gfile.toString();
-        }
-    }
-
-    @Override
-    public AbstractionNode createAbstractionNodeFromImplementation(final ImplementationNode node) {
-        List<String> attributsList = node.getAttributes().stream().map(attribute -> attribute.getAbstractionLevelName())
-                .collect(Collectors.toList());
-        return new AbstractionNode(node.getTypes(), attributsList);
-    }
-
-    @Override
-    public AbstractionEdge createAbstractionEdgeFromImplementation(final ImplementationEdge edge) {
-
-        final List<String> attributesList = new ArrayList<>();
-        // populate attribute List
-        edge.getPaths().forEach(path -> path.getTraversalHops().forEach(hop -> hop.getAttributes()
-                .forEach(attribute -> attributesList.add(attribute.getAbstractionLevelName()))));
-
-        // Removes duplicates
-        List<String> filteredAttributes = attributesList.stream().distinct().collect(Collectors.toList());
-
-        return new AbstractionEdge(edge.getTypes(), filteredAttributes, new ArrayList<String>(),
-                new ArrayList<String>(), false);
-    }
 }
