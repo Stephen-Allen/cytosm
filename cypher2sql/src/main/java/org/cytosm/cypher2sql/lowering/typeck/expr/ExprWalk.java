@@ -196,7 +196,9 @@ public class ExprWalk {
             for (Expr oldArg: expr.args) {
                 args.add(fold(this, oldArg));
             }
-            return new ExprFn(expr.name, args);
+            return expr.name != null ?
+                new ExprFn(expr.name, args) :
+                new ExprFn(expr.cypherName, args);
         }
 
         @Override

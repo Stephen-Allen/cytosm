@@ -178,7 +178,7 @@ public class TransformFunctions {
 
         @Override
         public Expr foldFn(ExprFn expr) throws Cypher2SqlException {
-            if (expr.cypherName.equalsIgnoreCase(LENGTH)) {
+            if (LENGTH.equalsIgnoreCase(expr.cypherName)) {
                 if (expr.args.size() == 1) {
                     Expr arg = expr.args.get(0);
                     if (arg instanceof ExprVar && ((ExprVar) arg).var.type() instanceof PathType) {
@@ -192,4 +192,41 @@ public class TransformFunctions {
 
 
     }
+
+    /**
+     * Transform all functions that have a straightforward translation into an equivalent SQL function
+     *
+     * @param tree is the tree that where expression will be changed.
+     * @throws Cypher2SqlException is thrown if an error is encountered
+     */
+    public static void convertPassThroughFunctions(ScopeSelect tree) throws Cypher2SqlException {
+        Walk.walkSQLNode(new PassThroughVisitor(), tree);
+    }
+
+    private static class PassThroughVisitor extends Walk.BaseSQLNodeVisitor {
+
+        @Override
+        public void visitSimpleSelect(SimpleSelect simpleSelect) throws Cypher2SqlException {
+            PassThroughFolder folder = new PassThroughFolder();
+            simpleSelect.exportedItems = simpleSelect.exportedItems.stream()
+                .<Expr>map(rethrowFunction(e -> ExprWalk.<Expr, Cypher2SqlException>fold(folder, e)))
+                .collect(Collectors.toList());
+
+            simpleSelect.whereCondition = ExprWalk.fold(folder, simpleSelect.whereCondition);
+        }
+
+        private static class PassThroughFolder extends ExprWalk.IdentityFolder<Cypher2SqlException> {
+            @Override
+            public Expr foldFn(ExprFn expr) throws Cypher2SqlException {
+                if (expr.cypherName == null) return expr;
+                switch (expr.cypherName.toLowerCase()) {
+                    case "tolower" : return new ExprFn(ExprFn.Name.LOWER, expr.args);
+                    case "toupper" : return new ExprFn(ExprFn.Name.UPPER, expr.args);
+                    default: return expr;
+                }
+            }
+        }
+    }
+
+
 }

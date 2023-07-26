@@ -1,10 +1,9 @@
 package org.cytosm.cypher2sql.lowering.typeck.expr;
 
-import org.cytosm.cypher2sql.lowering.rendering.RenderingContext;
-import org.cytosm.cypher2sql.lowering.rendering.RenderingHelper;
-
 import java.util.List;
 import java.util.stream.Collectors;
+
+import org.cytosm.cypher2sql.lowering.rendering.RenderingContext;
 
 /**
  * Representation of functions. Functions have a specific treatment
@@ -22,7 +21,9 @@ public class ExprFn implements Expr {
      */
     public enum Name {
         COUNT,
-        SUM
+        SUM,
+        LOWER,
+        UPPER,
     }
 
     /**
@@ -57,12 +58,14 @@ public class ExprFn implements Expr {
         String args = this.args.stream()
                 .map(x -> x.toSQLString(ctx))
                 .collect(Collectors.joining(", "));
-        if (name.equals(Name.COUNT)) {
-            return "count(" + args + ")";
-        } else if (name.equals(Name.SUM)) {
-            return "sum(" + args + ")";
+
+        switch (name) {
+            case COUNT: return "count(" + args + ")";
+            case SUM: return "sum(" + args + ")";
+            case LOWER: return "lower(" + args + ")";
+            case UPPER: return "upper(" + args + ")";
+            default: throw new RuntimeException("Unimplemented code reached");
         }
-        throw new RuntimeException("Unimplemented code reached");
     }
 
 }

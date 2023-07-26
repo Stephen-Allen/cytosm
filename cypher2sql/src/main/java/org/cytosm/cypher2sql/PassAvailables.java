@@ -116,6 +116,9 @@ public class PassAvailables {
         // the value stored on the PathVar p otherwise it does nothing.
         TransformFunctions.convertPathLength(tree);
 
+        // Transform passthrough functions
+        TransformFunctions.convertPassThroughFunctions(tree);
+
         // Unwrap alias expr and compute constant expression
         // where possible.
         UnwrapAliasVar.unwrapConstants(tree);
