@@ -1,5 +1,7 @@
 package org.cytosm.cypher2sql.cypher.ast.expression;
 
+import org.cytosm.cypher2sql.utils.StringEscapeUtils;
+
 /**
  */
 public abstract class Literal extends Expression {
@@ -64,7 +66,8 @@ public abstract class Literal extends Expression {
 
         public StringLiteral(final String stringValue) {
             super(stringValue);
-            this.value = stringValue.substring(1, stringValue.length() - 1);
+            final String str = stringValue.substring(1, stringValue.length() - 1);
+            this.value = StringEscapeUtils.unescape(str);
         }
     }
 

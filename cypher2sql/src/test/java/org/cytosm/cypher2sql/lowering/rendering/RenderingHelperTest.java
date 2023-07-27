@@ -10,8 +10,8 @@ public class RenderingHelperTest {
     public void itShouldEscapeForSqlLiteral() {
         final RenderingHelper helper = new RenderingHelper();
         assertEquals(" spaces do nothing ", helper.escapeForSqlLiteral(" spaces do nothing "));
-        assertEquals("should escape \\' marks", helper.escapeForSqlLiteral("should escape ' marks"));
-        assertEquals("should escape \\'\\' marks", helper.escapeForSqlLiteral("should escape '' marks"));
+        assertEquals("should escape '' marks", helper.escapeForSqlLiteral("should escape ' marks"));
+        assertEquals("should escape ''foo'' marks", helper.escapeForSqlLiteral("should escape 'foo' marks"));
         assertEquals("should not escape ~", helper.escapeForSqlLiteral("should not escape ~"));
         assertEquals("should not escape %", helper.escapeForSqlLiteral("should not escape %"));
     }

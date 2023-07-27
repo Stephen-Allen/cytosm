@@ -55,7 +55,7 @@ public class RenderingHelper {
      * @return an escaped string
      */
     public String escapeForSqlLiteral(final String value) {
-        return escape(value, new char[] { '\'' });
+        return escape(value, new char[] { }, new char[] { '\'' });
     }
 
     /**

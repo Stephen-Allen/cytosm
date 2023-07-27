@@ -52,4 +52,8 @@ public class StringEscapeUtils {
         }
         return sb.toString();
     }
+
+    public static String unescape(final String value) {
+        return org.apache.commons.lang3.StringEscapeUtils.unescapeJava(value);
+    }
 }
