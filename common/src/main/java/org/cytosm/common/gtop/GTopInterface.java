@@ -4,10 +4,9 @@ import java.util.List;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import org.cytosm.common.gtop.abstraction.AbstractionEdge;
-import org.cytosm.common.gtop.abstraction.AbstractionLevelGtop;
 import org.cytosm.common.gtop.abstraction.AbstractionNode;
+import org.cytosm.common.gtop.implementation.graphmetadata.GraphMetadata;
 import org.cytosm.common.gtop.implementation.relational.ImplementationEdge;
-import org.cytosm.common.gtop.implementation.relational.ImplementationLevelGtop;
 import org.cytosm.common.gtop.implementation.relational.ImplementationNode;
 
 /***
@@ -22,20 +21,9 @@ public interface GTopInterface {
     String getVersion();
 
     /**
-     * @return the abstractionLevel
+     * @return the graph metadata for the implementation level
      */
-    AbstractionLevelGtop getAbstractionLevel();
-
-    /**
-     * @return the implementationLevel
-     */
-    ImplementationLevelGtop getImplementationLevel();
-
-    /**
-     * @return the implementation nodes
-     */
-    @JsonIgnore
-    List<ImplementationNode> getImplementationNodes();
+    GraphMetadata getGraphMetadata();
 
     /**
      * @return the abstraction nodes
@@ -48,6 +36,12 @@ public interface GTopInterface {
      */
     @JsonIgnore
     List<AbstractionEdge> getAbstractionEdges();
+
+    /**
+     * @return the implementation nodes
+     */
+    @JsonIgnore
+    List<ImplementationNode> getImplementationNodes();
 
     /**
      * @return the edges

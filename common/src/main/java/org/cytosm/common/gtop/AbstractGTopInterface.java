@@ -1,21 +1,15 @@
 package org.cytosm.common.gtop;
 
-import java.io.File;
-import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 import java.util.stream.Collectors;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
-import com.fasterxml.jackson.core.JsonParseException;
-import com.fasterxml.jackson.databind.JsonMappingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.cytosm.common.gtop.abstraction.AbstractionEdge;
-import org.cytosm.common.gtop.abstraction.AbstractionLevelGtop;
 import org.cytosm.common.gtop.abstraction.AbstractionNode;
 import org.cytosm.common.gtop.implementation.relational.ImplementationEdge;
-import org.cytosm.common.gtop.implementation.relational.ImplementationLevelGtop;
 import org.cytosm.common.gtop.implementation.relational.ImplementationNode;
 
 /***
@@ -23,95 +17,7 @@ import org.cytosm.common.gtop.implementation.relational.ImplementationNode;
  *
  *
  */
-public abstract class GTopInterfaceImpl implements GTopInterface {
-
-    /**
-     * Gtop that is being accessed.
-     */
-    protected final GTop gtop;
-
-    // Constructors:
-    /***
-     * Default constructor.
-     *
-     * @param gtopLoaded loaded gtop
-     */
-    public GTopInterfaceImpl(final GTop gtopLoaded) {
-        gtop = gtopLoaded;
-    }
-
-    /**
-     * Reads GTop from a file.
-     *
-     * @param fileObj gtop file
-     * @throws IOException I/O Exception
-     * @throws JsonMappingException JsonMappingException
-     * @throws JsonParseException JsonParseException
-     */
-    public GTopInterfaceImpl(final File fileObj) throws JsonParseException, JsonMappingException, IOException {
-        ObjectMapper mapper = new ObjectMapper();
-        gtop = mapper.readValue(fileObj, GTop.class);
-    }
-
-
-    /**
-     * Reads Gtop from a string.
-     *
-     * @param gTopStr gtop file in a string
-     */
-    public GTopInterfaceImpl(final String gTopStr) throws IOException {
-        ObjectMapper mapper = new ObjectMapper();
-        System.out.println("Printing gtop: " + gTopStr);
-        gtop = mapper.readValue(gTopStr, GTop.class);
-    }
-
-
-    // Interface Implementation:
-
-    // Implementation-independent:
-    /**
-     * @return the version
-     */
-    @Override
-    public String getVersion() {
-        return gtop.getVersion();
-    }
-
-    /**
-     * @return the implementationLevel
-     */
-    @Override
-    public ImplementationLevelGtop getImplementationLevel() {
-        return gtop.getImplementationLevel();
-    }
-
-    /**
-     * @return the abstractionLevel
-     */
-    @Override
-    public AbstractionLevelGtop getAbstractionLevel() {
-        return gtop.getAbstractionLevel();
-    }
-
-    /**
-     * @return the abstraction nodes
-     */
-    @Override
-    @JsonIgnore
-    public List<AbstractionNode> getAbstractionNodes() {
-        return gtop.getAbstractionLevel().getAbstractionNodes();
-    }
-
-    /**
-     * @return the edges
-     */
-    @Override
-    @JsonIgnore
-    public List<AbstractionEdge> getAbstractionEdges() {
-        return gtop.getAbstractionLevel().getAbstractionEdges();
-    }
-
-    // Interface-friendly methods
+public abstract class AbstractGTopInterface implements GTopInterface {
 
     /***
      * @return a deduplicated edges types list.
@@ -121,7 +27,7 @@ public abstract class GTopInterfaceImpl implements GTopInterface {
     public List<String> getAllEdgeTypes() {
         final List<String> withDuplicationsAllEdgeTypes = new ArrayList<>();
 
-        gtop.getAbstractionLevel().getAbstractionEdges()
+        this.getAbstractionEdges()
                 .forEach(edge -> withDuplicationsAllEdgeTypes.addAll(edge.getTypes()));
 
         // de-duplicate:
@@ -139,7 +45,7 @@ public abstract class GTopInterfaceImpl implements GTopInterface {
     public List<String> getAllNodeTypes() {
         final List<String> withDuplucationsAllNodeTypes = new ArrayList<>();
 
-        gtop.getAbstractionLevel().getAbstractionNodes()
+        this.getAbstractionNodes()
                 .forEach(node -> withDuplucationsAllNodeTypes.addAll(node.getTypes()));
 
         // de-duplicate:
@@ -162,8 +68,7 @@ public abstract class GTopInterfaceImpl implements GTopInterface {
         List<AbstractionEdge> edgeList = new ArrayList<>();
         String typeLower = types.toLowerCase();
 
-        edgeList = gtop
-                .getAbstractionLevel().getAbstractionEdges().stream().filter(edge -> edge.getTypes().stream()
+        edgeList = this.getAbstractionEdges().stream().filter(edge -> edge.getTypes().stream()
                         .map(String::toLowerCase).collect(Collectors.toList()).contains(typeLower))
                 .collect(Collectors.toList());
 
@@ -183,8 +88,7 @@ public abstract class GTopInterfaceImpl implements GTopInterface {
         List<AbstractionNode> nodeList = new ArrayList<>();
         String typeLower = types.toLowerCase();
 
-        nodeList = gtop
-                .getAbstractionLevel().getAbstractionNodes().stream().filter(node -> node.getTypes().stream()
+        nodeList = this.getAbstractionNodes().stream().filter(node -> node.getTypes().stream()
                         .map(String::toLowerCase).collect(Collectors.toList()).contains(typeLower))
                 .collect(Collectors.toList());
 
@@ -203,7 +107,7 @@ public abstract class GTopInterfaceImpl implements GTopInterface {
         List<AbstractionNode> abstractions = new ArrayList<>();
 
         // if the abstraction matches any of the implementation level types, append to list.
-        abstractions = gtop.getAbstractionLevel().getAbstractionNodes().stream()
+        abstractions = this.getAbstractionNodes().stream()
                 .filter(filteredNode -> !Collections.disjoint(filteredNode.getTypes(), node.getTypes()))
                 .collect(Collectors.toList());
 
@@ -249,7 +153,7 @@ public abstract class GTopInterfaceImpl implements GTopInterface {
         List<AbstractionEdge> edgeList = new ArrayList<>();
 
         if (types != null && !types.isEmpty()) {
-            for (AbstractionEdge edge : gtop.getAbstractionLevel().getAbstractionEdges()) {
+            for (AbstractionEdge edge : this.getAbstractionEdges()) {
                 if (edge.getSourceType().stream()
                         .anyMatch(type -> types.contains(type.toLowerCase()) || type.toCharArray().equals("all"))
                         || edge.getDestinationType().stream().anyMatch(
@@ -277,7 +181,7 @@ public abstract class GTopInterfaceImpl implements GTopInterface {
         List<AbstractionEdge> edgeList = new ArrayList<>();
 
         if (sourceNode != null && destinationNode != null) {
-            for (AbstractionEdge edge : gtop.getAbstractionLevel().getAbstractionEdges()) {
+            for (AbstractionEdge edge : this.getAbstractionEdges()) {
                 if (edge.getSourceType().stream()
                         .anyMatch(type -> sourceNode.getTypes().contains(type.toLowerCase())
                                 || type.toCharArray().equals("all"))
@@ -373,41 +277,46 @@ public abstract class GTopInterfaceImpl implements GTopInterface {
         return edgeNodes;
     }
 
-    // Implementation - Dependent:
-
-    /**
-     * @return the implementation nodes
-     */
-    @Override
-    @JsonIgnore
-    public abstract List<ImplementationNode> getImplementationNodes();
-
-    /**
-     * @return the edges
-     */
-    @Override
-    @JsonIgnore
-    public abstract List<ImplementationEdge> getImplementationEdges();
-
     /***
-     * Finds an Implementation edge by type or table name reference.
+     * Finds an Implementation Node by type.
      *
      * @param type
      * @return
      */
     @Override
     @JsonIgnore
-    public abstract List<ImplementationNode> getImplementationNodesByType(final String type);
+    public List<ImplementationNode> getImplementationNodesByType(final String type) {
+        List<ImplementationNode> foundNodes = new ArrayList<>();
+        if (type == null) {
+            return foundNodes;
+        }
+        foundNodes = this.getImplementationNodes().stream().filter(node -> node.getTypes().stream()
+                .map(String::toLowerCase).collect(Collectors.toList()).contains(type.toLowerCase()))
+            .collect(Collectors.toList());
+
+        return foundNodes;
+    }
 
     /***
-     * Finds an Implementation edge by type or table name reference.
+     * Finds an Implementation edge by type.
      *
      * @param type
      * @return
      */
     @Override
     @JsonIgnore
-    public abstract List<ImplementationEdge> getImplementationEdgeByType(final String type);
+    public List<ImplementationEdge> getImplementationEdgeByType(final String type) {
+        List<ImplementationEdge> foundEdge = new ArrayList<>();
+        if (type == null) {
+            return foundEdge;
+        }
+
+        foundEdge = this.getImplementationEdges().stream().filter(edge -> edge.getTypes().stream()
+                .map(String::toLowerCase).collect(Collectors.toList()).contains(type.toLowerCase()))
+            .collect(Collectors.toList());
+
+        return foundEdge;
+    }
 
     /***
      * Return the implementations for a given node. The node can be represented in several tables.
@@ -417,7 +326,18 @@ public abstract class GTopInterfaceImpl implements GTopInterface {
      */
     @Override
     @JsonIgnore
-    public abstract List<ImplementationNode> findNodeImplementations(final AbstractionNode node);
+    public List<ImplementationNode> findNodeImplementations(final AbstractionNode node) {
+        List<ImplementationNode> implementation = new ArrayList<>();
+
+        // if the implementation matches any of the abstraction level types, append to list.
+        implementation = this.getImplementationNodes().stream()
+            .filter(filteredNode -> !Collections.disjoint(filteredNode.getTypes(), node.getTypes()))
+            .collect(Collectors.toList());
+
+        return implementation;
+    }
+
+
 
     /***
      * Return the implementations for a given edge.
@@ -427,7 +347,18 @@ public abstract class GTopInterfaceImpl implements GTopInterface {
      */
     @Override
     @JsonIgnore
-    public abstract ImplementationEdge findEdgeImplementation(final AbstractionEdge edge);
+    public ImplementationEdge findEdgeImplementation(final AbstractionEdge edge) {
+        ImplementationEdge implementation = null;
+
+        for (ImplementationEdge analyzedEdge : this.getImplementationEdges()) {
+            if (!Collections.disjoint(edge.getTypes(), analyzedEdge.getTypes())) {
+                implementation = analyzedEdge;
+                break;
+            }
+        }
+
+        return implementation;
+    }
 
 
     // Utils:

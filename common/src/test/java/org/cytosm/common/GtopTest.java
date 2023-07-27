@@ -1,25 +1,18 @@
 package org.cytosm.common;
 
-import java.io.File;
 import java.io.IOException;
-import java.nio.file.Files;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
-import org.apache.commons.io.FileUtils;
-import org.cytosm.common.gtop.GTopInterface;
-import org.cytosm.common.gtop.implementation.graphmetadata.BackendSystem;
-import org.junit.After;
-import org.junit.Assert;
-import org.junit.Test;
-
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.cytosm.common.gtop.GTop;
+import org.cytosm.common.gtop.GTopInterface;
 import org.cytosm.common.gtop.RelationalGTopInterface;
 import org.cytosm.common.gtop.abstraction.AbstractionEdge;
 import org.cytosm.common.gtop.abstraction.AbstractionLevelGtop;
 import org.cytosm.common.gtop.abstraction.AbstractionNode;
+import org.cytosm.common.gtop.implementation.graphmetadata.BackendSystem;
 import org.cytosm.common.gtop.implementation.graphmetadata.GraphMetadata;
 import org.cytosm.common.gtop.implementation.graphmetadata.StorageLayout;
 import org.cytosm.common.gtop.implementation.relational.Attribute;
@@ -32,6 +25,8 @@ import org.cytosm.common.gtop.implementation.relational.RestrictionClauses;
 import org.cytosm.common.gtop.implementation.relational.TraversalHop;
 import org.cytosm.common.gtop.implementation.relational.TraversalPath;
 import org.cytosm.common.gtop.io.SerializationInterface;
+import org.junit.Assert;
+import org.junit.Test;
 
 public class GtopTest {
 
@@ -52,9 +47,6 @@ public class GtopTest {
         GTop gTop = new GTop(abslevel, implevel);
 
         ObjectMapper mapper = new ObjectMapper();
-
-        // Object to JSON in file
-        mapper.writeValue(new File("emptytemplate.gtop"), gTop);
 
         // Object to JSON in String
         String jsonInString = mapper.writerWithDefaultPrettyPrinter().writeValueAsString(gTop);
@@ -147,9 +139,6 @@ public class GtopTest {
         // Object to JSON in String - pretty-printed
         String jsonInString = SerializationInterface.toPrettyString(gTop);
 
-        // Object to JSON in file
-        FileUtils.writeStringToFile(new File("filledtemplate.gtop"), jsonInString);
-
         // Dump to console ...
         System.out.println(jsonInString);
 
@@ -208,21 +197,7 @@ public class GtopTest {
         //Assert.assertEquals(impnd1.get(0), impnd2.get(0));
 
         // Graph metadata
-        Assert.assertEquals(gTop.getImplementationLevel().getGraphMetadata(), gInterfaceFromString
-                .getImplementationLevel().getGraphMetadata());
-
+        Assert.assertEquals(gTop.getImplementationLevel().getGraphMetadata(), gInterfaceFromString.getGraphMetadata());
     }
 
-    @After
-    public void cleanup() {
-        // remove files:
-
-        try {
-            Files.deleteIfExists((new File("filledtemplate.gtop")).toPath());
-            Files.deleteIfExists((new File("emptytemplate.gtop")).toPath());
-        } catch (IOException x) {
-            // File permission problems are caught here.
-            System.err.println(x);
-        }
-    }
 }
