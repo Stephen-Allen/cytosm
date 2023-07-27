@@ -44,18 +44,6 @@ public interface GTopInterface {
     List<AbstractionNode> getAbstractionNodes();
 
     /**
-     * @param nodes the implementation nodes to set
-     */
-    @JsonIgnore
-    void setImplementationNodes(final List<ImplementationNode> nodes);
-
-    /**
-     * @param nodes the abstraction nodes to set
-     */
-    @JsonIgnore
-    void setAbstractionNodes(final List<AbstractionNode> nodes);
-
-    /**
      * @return the edges
      */
     @JsonIgnore
@@ -66,12 +54,6 @@ public interface GTopInterface {
      */
     @JsonIgnore
     List<ImplementationEdge> getImplementationEdges();
-
-    /**
-     * @param edges the edges to set
-     */
-    @JsonIgnore
-    void setImplementationEdges(final List<ImplementationEdge> edges);
 
     /***
      * @return a deduplicated edge types list.

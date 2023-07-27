@@ -103,29 +103,12 @@ public abstract class GTopInterfaceImpl implements GTopInterface {
     }
 
     /**
-     * @param nodes the abstraction nodes to set
-     */
-    @Override
-    @JsonIgnore
-    public void setAbstractionNodes(final List<AbstractionNode> nodes) {
-        gtop.getAbstractionLevel().setAbstractionNodes(nodes);
-    }
-
-    /**
      * @return the edges
      */
     @Override
     @JsonIgnore
     public List<AbstractionEdge> getAbstractionEdges() {
         return gtop.getAbstractionLevel().getAbstractionEdges();
-    }
-
-    /**
-     * @param edges the edges to set
-     */
-    @JsonIgnore
-    public void setAbstractionEdges(final List<AbstractionEdge> edges) {
-        gtop.getAbstractionLevel().setAbstractionEdges(edges);
     }
 
     // Interface-friendly methods
@@ -400,25 +383,11 @@ public abstract class GTopInterfaceImpl implements GTopInterface {
     public abstract List<ImplementationNode> getImplementationNodes();
 
     /**
-     * @param nodes the implementation nodes to set
-     */
-    @Override
-    @JsonIgnore
-    public abstract void setImplementationNodes(final List<ImplementationNode> nodes);
-
-    /**
      * @return the edges
      */
     @Override
     @JsonIgnore
     public abstract List<ImplementationEdge> getImplementationEdges();
-
-    /**
-     * @param edges the edges to set
-     */
-    @Override
-    @JsonIgnore
-    public abstract void setImplementationEdges(final List<ImplementationEdge> edges);
 
     /***
      * Finds an Implementation edge by type or table name reference.

@@ -10,11 +10,9 @@ import java.util.stream.Collectors;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.core.JsonParseException;
 import com.fasterxml.jackson.databind.JsonMappingException;
-import com.fasterxml.jackson.databind.ObjectMapper;
 import org.cytosm.common.gtop.abstraction.AbstractionEdge;
 import org.cytosm.common.gtop.abstraction.AbstractionNode;
 import org.cytosm.common.gtop.implementation.relational.ImplementationEdge;
-import org.cytosm.common.gtop.implementation.relational.ImplementationLevelGtop;
 import org.cytosm.common.gtop.implementation.relational.ImplementationNode;
 
 /***
@@ -70,31 +68,12 @@ public class RelationalGTopInterface extends GTopInterfaceImpl {
 
 
     /**
-     * @param nodes the implementation nodes to set
-     */
-    @Override
-    @JsonIgnore
-    public void setImplementationNodes(final List<ImplementationNode> nodes) {
-        gtop.getImplementationLevel().setImplementationNodes(nodes);
-    }
-
-
-    /**
      * @return the edges
      */
     @Override
     @JsonIgnore
     public List<ImplementationEdge> getImplementationEdges() {
         return gtop.getImplementationLevel().getImplementationEdges();
-    }
-
-    /**
-     * @param edges the edges to set
-     */
-    @Override
-    @JsonIgnore
-    public void setImplementationEdges(final List<ImplementationEdge> edges) {
-        gtop.getImplementationLevel().setImplementationEdges(edges);
     }
 
     /***
