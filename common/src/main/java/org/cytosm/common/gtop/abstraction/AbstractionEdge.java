@@ -1,8 +1,8 @@
 package org.cytosm.common.gtop.abstraction;
 
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.List;
+import java.util.stream.Collectors;
 
 /***
  * Abstraction Edge.
@@ -97,15 +97,10 @@ public class AbstractionEdge extends AbstractionGraphComponent {
     @SuppressWarnings("checkstyle:magicnumber")
     public int hashCode() {
         // In order to produce the same hash code.
-        Collections.sort(types);
-        Collections.sort(attributes);
-        Collections.sort(sourceType);
-        Collections.sort(destinationType);
-
-        int result = types != null ? types.hashCode() : 0;
-        result = 31 * result + (attributes != null ? attributes.hashCode() : 0);
-        result = 31 * result + (sourceType != null ? sourceType.hashCode() : 0);
-        result = 31 * result + (destinationType != null ? destinationType.hashCode() : 0);
+        int result = types != null ? types.stream().sorted().collect(Collectors.toList()).hashCode() : 0;
+        result = 31 * result + (attributes != null ? attributes.stream().sorted().collect(Collectors.toList()).hashCode() : 0);
+        result = 31 * result + (sourceType != null ? sourceType.stream().sorted().collect(Collectors.toList()).hashCode() : 0);
+        result = 31 * result + (destinationType != null ? destinationType.stream().sorted().collect(Collectors.toList()).hashCode() : 0);
         result = 31 * result + (directed ? 1 : 0);
         return result;
     }

@@ -1,8 +1,8 @@
 package org.cytosm.common.gtop.abstraction;
 
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.List;
+import java.util.stream.Collectors;
 
 /***
  * Abstraction Node.
@@ -33,11 +33,8 @@ public class AbstractionNode extends AbstractionGraphComponent {
     @SuppressWarnings("checkstyle:magicnumber")
     public int hashCode() {
         // In order to produce the same hash-code.
-        Collections.sort(types);
-        Collections.sort(attributes);
-
-        int result = types != null ? types.hashCode() : 0;
-        result = 31 * result + (attributes != null ? attributes.hashCode() : 0);
+        int result = types != null ? types.stream().sorted().collect(Collectors.toList()).hashCode() : 0;
+        result = 31 * result + (attributes != null ? attributes.stream().sorted().collect(Collectors.toList()).hashCode() : 0);
         return result;
     }
 
