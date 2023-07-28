@@ -162,7 +162,7 @@ public class PopulateJoins {
                 // First we create the Join itself and a TempVar
                 // (the tempVar is special is that it is allowed to be created there.
                 BaseJoin join = createJoin(simpleSelect);
-                TempVar joinVar = new TempVar();
+                TempVar joinVar = new TempVar(rel.labels);
 
                 // Then we create the different part of the Join.
                 FromItem joiningFrom = new FromItem();

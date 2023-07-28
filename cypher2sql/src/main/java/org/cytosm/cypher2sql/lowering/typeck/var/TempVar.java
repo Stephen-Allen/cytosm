@@ -1,5 +1,7 @@
 package org.cytosm.cypher2sql.lowering.typeck.var;
 
+import java.util.Collection;
+
 import org.cytosm.cypher2sql.lowering.typeck.NameProvider;
 import org.cytosm.cypher2sql.lowering.typeck.types.AType;
 import org.cytosm.cypher2sql.lowering.typeck.types.NodeType;
@@ -18,6 +20,11 @@ public class TempVar extends NodeOrTempOrRelVar {
     }
 
     public TempVar() {
+        this(null);
+    }
+
+    public TempVar(final Collection<String> labels) {
+        super(labels);
         this.uniqueName = NameProvider.getUniqueTempVarName();
     }
 }
