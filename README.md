@@ -9,7 +9,7 @@ This is a fork of the main [Cytosm](https://github.com/cytosm/cytosm) repository
 - Add toLower() and toUpper() functions
 
 ## Fixes
-- Parse string literal escape sequences in Cypher queries correctly
+- Parse name and string literal escape sequences in Cypher queries correctly
 - Escape string literals in SQL output
 - Clean up and simplify the GTopInterface class
 - Keep track of the labels on relationship variables during SQL generation
