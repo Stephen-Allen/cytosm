@@ -1,5 +1,10 @@
 package org.cytosm.cypher2sql.utils;
 
+import org.apache.commons.lang3.text.translate.AggregateTranslator;
+import org.apache.commons.lang3.text.translate.CharSequenceTranslator;
+import org.apache.commons.lang3.text.translate.LookupTranslator;
+import org.apache.commons.lang3.text.translate.UnicodeUnescaper;
+
 import static com.google.common.base.Preconditions.checkNotNull;
 import static org.apache.commons.lang3.ArrayUtils.contains;
 
@@ -53,7 +58,28 @@ public class StringEscapeUtils {
         return sb.toString();
     }
 
-    public static String unescape(final String value) {
+    /**
+     * Unescape cypher string literals.
+     *
+     * @see <a href="https://neo4j.com/docs/cypher-manual/current/syntax/expressions/">Cypher documentation</a>
+     */
+    public static String unescapeCypherStringLiteral(final String value) {
         return org.apache.commons.lang3.StringEscapeUtils.unescapeJava(value);
     }
+
+    /**
+     * Unescape cypher name literals.
+     *
+     * @see <a href="https://neo4j.com/docs/cypher-manual/current/syntax/naming/">Cypher documentation</a>
+     */
+    public static String unescapeCypherName(final String value) {
+        final CharSequenceTranslator translator = new AggregateTranslator(
+            new UnicodeUnescaper(),
+            new LookupTranslator(new String[][] {
+                {"``", "`"},
+            })
+        );
+        return translator.translate(value);
+    }
+
 }

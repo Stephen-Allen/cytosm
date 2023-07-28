@@ -67,7 +67,7 @@ public abstract class Literal extends Expression {
         public StringLiteral(final String stringValue) {
             super(stringValue);
             final String str = stringValue.substring(1, stringValue.length() - 1);
-            this.value = StringEscapeUtils.unescape(str);
+            this.value = StringEscapeUtils.unescapeCypherStringLiteral(str);
         }
     }
 
