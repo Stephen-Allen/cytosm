@@ -46,12 +46,20 @@ public class PassAvailables {
      * @param cypher is the cypher to convert.
      * @return Returns a SQL tree.
      */
-    public static ScopeSelect cypher2sqlOnExpandedPaths(final GTopInterface gTopInterface, String cypher)
-            throws Cypher2SqlException
-    {
+    public static ScopeSelect cypher2sqlOnExpandedPaths(final GTopInterface gTopInterface, String cypher) throws Cypher2SqlException {
         // First pass, convert the cypher into an AST.
-        Statement st = parseCypher(cypher);
+        final Statement st = parseCypher(cypher);
+        return cypher2sqlOnExpandedPaths(gTopInterface, st);
+    }
 
+    /**
+     * Convert the provided Cypher into SQL.
+     * @param gTopInterface gtop implementation.
+     * @param st the AST tree
+     * @return Returns a SQL tree.
+     */
+    public static ScopeSelect cypher2sqlOnExpandedPaths(final GTopInterface gTopInterface, Statement st) throws Cypher2SqlException
+    {
         // Extract from the AST the dependencies between variables.
         VarDependencies vars = new VarDependencies(st);
 
