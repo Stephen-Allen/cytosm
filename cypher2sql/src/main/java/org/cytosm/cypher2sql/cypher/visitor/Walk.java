@@ -1,7 +1,8 @@
 package org.cytosm.cypher2sql.cypher.visitor;
 
 import org.apache.commons.lang3.tuple.Pair;
-import org.apache.log4j.Logger;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.cytosm.cypher2sql.cypher.ast.*;
 import org.cytosm.cypher2sql.cypher.ast.clause.*;
 import org.cytosm.cypher2sql.cypher.ast.clause.match.pattern.*;
@@ -16,7 +17,7 @@ import java.util.*;
  * Helpers to write visitors and folders on the AST.
  */
 public class Walk {
-    private static final Logger LOGGER = Logger.getLogger(Walk.class.getName());
+    private static final Logger LOGGER = LoggerFactory.getLogger(Walk.class.getName());
 
     // ==================================================================
     //                          VISITORs

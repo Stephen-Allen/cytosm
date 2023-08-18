@@ -3,7 +3,8 @@ package org.cytosm.cypher2sql.expandpaths;
 import java.util.*;
 import java.util.stream.Collectors;
 
-import org.apache.log4j.Logger;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.cytosm.cypher2sql.cypher.parser.ASTBuilder;
 import org.cytosm.cypher2sql.cypher.constexpr.ConstExpressionFolder;
 import org.cytosm.pathfinder.input.CanonicalConverter;
@@ -27,7 +28,7 @@ import java.util.Iterator;
  */
 public class CypherConverter extends CanonicalConverter {
 
-    private static final Logger LOG = Logger.getLogger(CanonicalConverter.class);
+    private static final Logger LOG = LoggerFactory.getLogger(CanonicalConverter.class);
 
     /***
      * Default constructor.

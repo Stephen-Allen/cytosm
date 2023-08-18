@@ -7,7 +7,8 @@ import java.util.Map;
 import java.util.Stack;
 import java.util.stream.Collectors;
 
-import org.apache.log4j.Logger;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import org.cytosm.common.gtop.GTopInterface;
 import org.cytosm.common.gtop.abstraction.AbstractionGraphComponent;
@@ -22,7 +23,7 @@ import org.cytosm.pathfinder.routeelements.ExpansionNode;
  */
 public class DirectedEnumerator extends AbstractEnumerator {
 
-    static final  Logger LOGGER = Logger.getLogger(DirectedEnumerator.class.getName());
+    static final  Logger LOGGER = LoggerFactory.getLogger(DirectedEnumerator.class.getName());
 
     /***
      * key: is the source node values: List of enumerated possibilities for that segment. The

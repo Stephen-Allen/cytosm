@@ -3,7 +3,8 @@ package org.cytosm.cypher2sql.expandpaths;
 import java.util.*;
 
 import org.cytosm.cypher2sql.cypher.parser.ASTBuilder;
-import org.apache.log4j.Logger;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import org.cytosm.cypher2sql.cypher.ast.*;
 import org.cytosm.cypher2sql.cypher.ast.clause.*;
@@ -25,7 +26,7 @@ import org.cytosm.cypher2sql.cypher.ast.clause.projection.*;
  */
 
 public class ExtractPath {
-    private static final Logger LOGGER = Logger.getLogger(ExtractPath.class.getName());
+    private static final Logger LOGGER = LoggerFactory.getLogger(ExtractPath.class.getName());
 
     /**
      * Split the query based on the various cypher elements: MATCH, RETURN, WITH.

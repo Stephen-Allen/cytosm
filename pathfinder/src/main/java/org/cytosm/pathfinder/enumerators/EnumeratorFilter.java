@@ -8,7 +8,8 @@ import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ConcurrentMap;
 import java.util.stream.Collectors;
 
-import org.apache.log4j.Logger;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import org.cytosm.pathfinder.routeelements.ExpansionEdge;
 import org.cytosm.pathfinder.routeelements.ExpansionElement;
@@ -21,7 +22,7 @@ import org.cytosm.pathfinder.routeelements.ExpansionElement;
  */
 public class EnumeratorFilter {
 
-    private static final Logger LOGGER = Logger.getLogger(EnumeratorFilter.class.getName());
+    private static final Logger LOGGER = LoggerFactory.getLogger(EnumeratorFilter.class.getName());
 
     /***
      * Map with all solved route possibilities, indexed by a route aware hashing function (the

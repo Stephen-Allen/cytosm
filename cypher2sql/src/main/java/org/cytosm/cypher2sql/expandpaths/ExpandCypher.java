@@ -10,7 +10,8 @@ import java.util.regex.Pattern;
 import org.cytosm.common.gtop.GTopInterface;
 import org.cytosm.pathfinder.PathFinder;
 import org.apache.commons.lang3.StringUtils;
-import org.apache.log4j.Logger;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import org.cytosm.pathfinder.CanonicalRoutes;
 import org.cytosm.pathfinder.output.PathSerializer;
@@ -54,7 +55,7 @@ public final class ExpandCypher {
 
     private ExpandCypher() {}
 
-    private static final Logger LOGGER = Logger.getLogger(ExpandCypher.class.getName());
+    private static final Logger LOGGER = LoggerFactory.getLogger(ExpandCypher.class.getName());
 
     /**
      * Takes a cypher query and gTop, splits the cypher into paths and for each path expands using the

@@ -6,7 +6,8 @@ import org.cytosm.cypher2sql.cypher.visitor.Walk;
 import org.cytosm.cypher2sql.lowering.typeck.constexpr.ConstVal;
 import org.apache.commons.lang3.tuple.ImmutablePair;
 import org.apache.commons.lang3.tuple.Pair;
-import org.apache.log4j.Logger;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.cytosm.cypher2sql.cypher.ast.expression.*;
 import org.cytosm.cypher2sql.cypher.ast.expression.Binary.*;
 
@@ -19,7 +20,7 @@ import java.util.Optional;
  */
 public class ExprTreeBuilder {
 
-    private static final Logger LOGGER = Logger.getLogger(ExprTreeBuilder.class.getName());
+    private static final Logger LOGGER = LoggerFactory.getLogger(ExprTreeBuilder.class.getName());
 
     public static class ExprTreeException extends Exception {
         ExprTreeException(final String message) {
