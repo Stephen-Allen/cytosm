@@ -3,13 +3,18 @@
 	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
 	<modelVersion>4.0.0</modelVersion>
 
-	<groupId>org.cytosm</groupId>
+	<groupId>io.github.stephen-allen.cytosm</groupId>
 	<artifactId>parent</artifactId>
 	<version>1.0-SNAPSHOT</version>
 	<packaging>pom</packaging>
 
   <name>Cytosm</name>
   <description>Cytosm Graph Tools</description>
+	<url>https://github.com/Stephen-Allen/cytosm</url>
+	<scm>
+		<connection>scm:git:https://github.com/Stephen-Allen/cytosm.git</connection>
+		<url>https://github.com/Stephen-Allen/cytosm/tree/main</url>
+	</scm>
 
 	<licenses>
 		<license>
@@ -62,6 +67,11 @@
 			<email>????</email>
 			<timezone>0</timezone>
 		</developer>
+		<developer>
+			<id>sallen</id>
+			<name>Stephen Allen</name>
+			<email>sallen@semantic-ai.com</email>
+		</developer>
 	</developers>
 
 	<properties>
@@ -75,6 +85,7 @@
 		<module>cypher2sql</module>
 		<module>pathfinder</module>
 	</modules>
+	
 	<dependencies>
 		<dependency>
 			<groupId>log4j</groupId>
