@@ -101,7 +101,7 @@ public interface GTopInterface {
     /***
      * Return the implementations for a given node. The node can be represented in several tables.
      *
-     * @param abstraction node
+     * @param node
      * @return
      */
     @JsonIgnore
@@ -110,7 +110,7 @@ public interface GTopInterface {
     /***
      * Return the abstraction for a given node.
      *
-     * @param abstraction node
+     * @param node
      * @return
      */
     @JsonIgnore
@@ -139,7 +139,7 @@ public interface GTopInterface {
     /**
      * Get the edges that start or end with node.
      *
-     * @param nodeA nodeA to look for
+     * @param types node types to look for
      * @return list of Abstraction Edges
      */
     @JsonIgnore
@@ -148,8 +148,8 @@ public interface GTopInterface {
     /**
      * Get the edges that connect nodeA to nodeB and are directed.
      *
-     * @param source Node
-     * @param destination Node
+     * @param sourceNode
+     * @param destinationNode
      * @return list of Abstraction Edges
      */
     @JsonIgnore
@@ -159,7 +159,7 @@ public interface GTopInterface {
     /**
      * Return source node types for a given edge.
      *
-     * @param edge edge to lookup
+     * @param analyzedEdge edge to lookup
      * @return set of two nodes for this edge
      */
     @JsonIgnore
@@ -168,7 +168,7 @@ public interface GTopInterface {
     /**
      * Return destination node types for a given edge.
      *
-     * @param edge edge to lookup
+     * @param analyzedEdge edge to lookup
      * @return list node types that this edge directs to
      */
     @JsonIgnore

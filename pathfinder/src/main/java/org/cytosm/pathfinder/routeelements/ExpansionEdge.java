@@ -49,7 +49,6 @@ public class ExpansionEdge extends ExpansionElement {
      * Default constructor.
      *
      * @param attributes attributes from the edge
-     * @param cypherInformation additional edge information available in the cypher
      */
     public ExpansionEdge(final List<String> types, final Map<String, String> attributes,
                          final Direction direction, final OptionalLong minimumRange,

@@ -25,7 +25,7 @@ public final class LambdaExceptionUtil {
     }
 
     /**
-     * .forEach(rethrowConsumer(name -> System.out.println(Class.forName(name))));
+     * {@code .forEach(rethrowConsumer(name -> System.out.println(Class.forName(name))));}
      */
     public static <T, E extends Exception> Consumer<T> rethrowConsumer(ConsumerWithExceptions<T, E> consumer) throws E {
         return t -> {
@@ -38,7 +38,7 @@ public final class LambdaExceptionUtil {
     }
 
     /**
-     * .map(rethrowFunction(name -> Class.forName(name))) or .map(rethrowFunction(Class::forName))
+     * {@code .map(rethrowFunction(name -> Class.forName(name))) or .map(rethrowFunction(Class::forName))}
      */
     public static <R, E extends Exception> IntFunction<R> rethrowIntFunction(IntFunctionWithExceptions<R, E> function) throws E  {
         return t -> {
@@ -53,7 +53,7 @@ public final class LambdaExceptionUtil {
 
 
     /**
-     * .map(rethrowFunction(name -> Class.forName(name))) or .map(rethrowFunction(Class::forName))
+     * {@code .map(rethrowFunction(name -> Class.forName(name))) or .map(rethrowFunction(Class::forName))}
      */
     public static <T, R, E extends Exception> Function<T, R> rethrowFunction(FunctionWithExceptions<T, R, E> function) throws E  {
         return t -> {

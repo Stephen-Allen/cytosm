@@ -286,7 +286,7 @@ public class TraversalHop {
      * <li>Case 3: Table A - Joining Table - Table B : Join with joining table - Products - Orders (via OrderDetails)</li>
      * </ul>
      *
-     * For case 2 & 3 the order of the join isn't important, however for case 1 the join of Employee1.ReportsTo =
+     * For case 2 &amp; 3 the order of the join isn't important, however for case 1 the join of Employee1.ReportsTo =
      * Employee2.EmployeeId is different to Employee2.ReportsTo = Employee1.EmployeeId hence it takes the join direction
      * into account.
      *

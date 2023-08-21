@@ -9,6 +9,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 /**
+ * <pre>
  * Represent where does the data will come from.
  * This is used by two types:
  *  - {@link org.cytosm.cypher2sql.lowering.sqltree.join.BaseJoin}
@@ -19,10 +20,10 @@ import java.util.List;
  * The following strong invariants needs to be verified:
  *
  *  - If `source` is null, `variables` size must be exactly 1.
- *  - If `source` is not null, `variables` size must be >= 1.
+ *  - If `source` is not null, `variables` size must be &#62;= 1.
  *  - If `source` is null, sourceTableName isn't.
  *  - If `source` is not null, sourceTableName is.
- *
+ * </pre>
  * <pre>source</pre> and <pre>sourceTableName</pre> would be better
  * represented with a tagged union but sadly those do not exists in Java...
  *

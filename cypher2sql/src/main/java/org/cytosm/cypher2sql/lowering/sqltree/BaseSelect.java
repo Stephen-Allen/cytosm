@@ -4,9 +4,9 @@ import org.cytosm.cypher2sql.lowering.typeck.ClauseId;
 
 /**
  * BaseSelect is a sum type for:
- *  - {@link SimpleSelect]
- *  - {@link ScopeSelect }
- *  - {@link UnionSelect}
+ *  {@link  SimpleSelect}
+ *  {@link ScopeSelect }
+ *  {@link UnionSelect}
  *
  */
 public abstract class BaseSelect implements SQLNode {

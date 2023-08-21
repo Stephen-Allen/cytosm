@@ -68,7 +68,7 @@ public class EnumeratorFilter {
     /***
      * Updates the solved map information.
      *
-     * @param foundMatchingRoute
+     * @param distinctList
      */
     protected void applyHashFiltering(List<List<ExpansionElement>> distinctList) {
 

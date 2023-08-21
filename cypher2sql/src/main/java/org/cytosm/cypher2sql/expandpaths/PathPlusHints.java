@@ -26,7 +26,7 @@ public class PathPlusHints {
      * Add a hint to this path.
      *
      * @param variableName variable that owns that hint
-     * @param value value of the hint
+     * @param attributeName value of the hint
      */
     public void addHints(final String variableName, final String attributeName) {
         Set<String> attributes;

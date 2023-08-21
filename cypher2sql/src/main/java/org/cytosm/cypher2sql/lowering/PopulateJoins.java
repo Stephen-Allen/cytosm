@@ -39,8 +39,7 @@ public class PopulateJoins {
      * Populate the SQL tree with JOIN elements based
      * ont the relationships from the VarDependencies.
      *
-     * Based on the {@link Relationship}
-     * provided by {@param vars} we pull from each {@link SimpleSelect} the
+     * Based on the {@link Relationship} provided by vars we pull from each {@link SimpleSelect}
      * @param sqltree is the tree where JOIN will be populated.
      * @param vars contains all the information about variable in the original cypher.
      * @param gTopInterface is the gtop implementation.

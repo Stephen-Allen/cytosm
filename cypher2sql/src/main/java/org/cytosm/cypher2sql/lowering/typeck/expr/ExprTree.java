@@ -139,14 +139,18 @@ public class ExprTree {
 
     public static class CaseExpr implements Expr {
         /**
-         * CASE <expr>
+         * <pre>
+         * {@code CASE <expr>}
          * if null then this is just CASE.
+         * </pre>
          */
         public Expr caseExpr = null;
 
         /**
-         * ELSE <defaultExpr>
+         * <pre>
+         * {@code ELSE <defaultExpr>}
          * if null then the ELSE is dropped entirely.
+         * </pre>
          */
         public Expr defaultExpr = null;
 

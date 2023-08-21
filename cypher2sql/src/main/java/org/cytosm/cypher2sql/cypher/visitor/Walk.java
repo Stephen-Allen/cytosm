@@ -108,7 +108,7 @@ public class Walk {
 
     /**
      * Walk a supposed Cypher AST, but where the object might
-     * not be an ASTNode such as a list of ASTNode or an <pre>Option<ASTNode></pre>
+     * not be an ASTNode such as a list of ASTNode or an {@code Option<ASTNode>}
      * @param visitor is the visitor to use.
      * @param obj the object to inspect.
      */
