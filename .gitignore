@@ -185,3 +185,6 @@ atlassian-ide-plugin.xml
 
 .Trash-1000
 .fuse_hidden*
+
+# Don't let the maven wrapper jar be checked in
+.mvn/wrapper/maven-wrapper.jar
