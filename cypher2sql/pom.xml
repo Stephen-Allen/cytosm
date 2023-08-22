@@ -4,7 +4,7 @@
     <parent>
         <groupId>io.github.stephen-allen.cytosm</groupId>
         <artifactId>parent</artifactId>
-        <version>1.0-SNAPSHOT</version>
+        <version>1.0</version>
     </parent>
     <artifactId>cypher2sql</artifactId>
     <packaging>jar</packaging>
@@ -188,6 +188,7 @@
             <plugin>
                 <groupId>org.codehaus.mojo</groupId>
                 <artifactId>build-helper-maven-plugin</artifactId>
+                <version>1.12</version>
                 <executions>
                     <!-- Add src/main/scala to source path of Eclipse -->
                     <execution>
