@@ -10,6 +10,8 @@
     <packaging>jar</packaging>
     <artifactId>common</artifactId>
     <name>common</name>
+    <description>Cytosm Common</description>
+    <url>https://github.com/Stephen-Allen/cytosm/tree/main/common</url>
 
     <dependencies>
         <dependency>

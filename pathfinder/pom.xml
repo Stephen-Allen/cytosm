@@ -10,6 +10,8 @@
 	<packaging>jar</packaging>
 
 	<name>pathfinder</name>
+	<description>Cytosm Pathfinder</description>
+	<url>https://github.com/Stephen-Allen/cytosm/tree/main/pathfinder</url>
 
 	<licenses>
 		<license>
