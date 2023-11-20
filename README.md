@@ -8,6 +8,7 @@ This is a fork of the main [Cytosm](https://github.com/cytosm/cytosm) repository
 - Add Regex, StartsWith, EndWith, and Contains operators
 - Add toLower() and toUpper() functions
 - A release build to Maven POM
+- Fix up build system and add Maven Wrapper for building
 
 ## Fixes
 - Parse name and string literal escape sequences in Cypher queries correctly
