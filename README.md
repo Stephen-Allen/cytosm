@@ -2,7 +2,7 @@
 
 [![Build Status](https://travis-ci.org/cytosm/cytosm.svg?branch=master)](https://travis-ci.org/cytosm/cytosm.svg?branch=master)
 
-This is a fork of the main [Cytosm](https://github.com/cytosm/cytosm) repository with some fixes and added features.
+This is a fork of [Cytosm](https://github.com/cytosm/cytosm) with new features and bug fixes.
 
 ## Added Features
 - Add Regex, StartsWith, EndWith, and Contains operators
