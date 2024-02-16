@@ -128,12 +128,21 @@ public class ExpandNodeVarWithGtop {
                             )
                             .collect(Collectors.toSet());
 
+                    // If we have zero, then ask the GTopInterface what the default table is
+                    if (implNodes.isEmpty()) {
+                        final List<ImplementationNode> nodes = gTopInterface.getImplementationNodesByType(null);
+                        if (!nodes.isEmpty()) {
+                            fromItem.sourceTableName = nodes.get(0).getTableName();
+                            possibilities.add(Collections.singletonList(fromItem));
+                        }
+                    }
                     // If we have only one node:
-                    if (implNodes.size() == 1) {
+                    else if (implNodes.size() == 1) {
                         // Then we simply set the source for the tableName.
                         fromItem.sourceTableName = implNodes.iterator().next().getTableName();
                         possibilities.add(Collections.singletonList(fromItem));
-                    } else {
+                    }
+                    else {
                         // Otherwise transform into as many as needed FromItem
                         // that points to the correct table.
                         possibilities.add(implNodes.stream().map(node -> {
