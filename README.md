@@ -29,3 +29,4 @@ Include the following in your pom.xml:
 </dependency>
 ```
 The main entry points to use the library are the static methods in the [`PassAvailables`](cypher2sql/src/main/java/org/cytosm/cypher2sql/PassAvailables.java) class.
+See the [README_ORIG.md](README_ORIG.md) for additional detail.
