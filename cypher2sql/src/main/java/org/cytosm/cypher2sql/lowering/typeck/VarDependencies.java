@@ -1,20 +1,43 @@
 package org.cytosm.cypher2sql.lowering.typeck;
 
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.Collections;
+import java.util.Comparator;
+import java.util.HashMap;
+import java.util.Iterator;
+import java.util.LinkedHashSet;
+import java.util.List;
+import java.util.Map;
+import java.util.Optional;
+import java.util.Set;
+import java.util.Stack;
+import java.util.TreeSet;
+import java.util.stream.Collectors;
+
+import org.cytosm.cypher2sql.cypher.ast.SingleQuery;
+import org.cytosm.cypher2sql.cypher.ast.Span;
+import org.cytosm.cypher2sql.cypher.ast.Statement;
+import org.cytosm.cypher2sql.cypher.ast.clause.Clause;
+import org.cytosm.cypher2sql.cypher.ast.clause.match.Match;
+import org.cytosm.cypher2sql.cypher.ast.clause.match.pattern.NamedPatternPart;
+import org.cytosm.cypher2sql.cypher.ast.clause.match.pattern.NodePattern;
+import org.cytosm.cypher2sql.cypher.ast.clause.match.pattern.PatternElement;
+import org.cytosm.cypher2sql.cypher.ast.clause.match.pattern.PatternPart;
+import org.cytosm.cypher2sql.cypher.ast.clause.match.pattern.RelationshipChain;
+import org.cytosm.cypher2sql.cypher.ast.clause.projection.Return;
+import org.cytosm.cypher2sql.cypher.ast.clause.projection.ReturnItem;
+import org.cytosm.cypher2sql.cypher.ast.clause.projection.With;
 import org.cytosm.cypher2sql.lowering.typeck.expr.Expr;
-import org.cytosm.cypher2sql.lowering.typeck.expr.ExprVar;
-import org.cytosm.cypher2sql.lowering.typeck.rel.Relationship;
-import org.cytosm.cypher2sql.lowering.typeck.var.*;
 import org.cytosm.cypher2sql.lowering.typeck.expr.ExprTree;
 import org.cytosm.cypher2sql.lowering.typeck.expr.ExprTreeBuilder;
-import org.cytosm.cypher2sql.cypher.ast.*;
-import org.cytosm.cypher2sql.cypher.ast.clause.*;
-import org.cytosm.cypher2sql.cypher.ast.clause.match.*;
-import org.cytosm.cypher2sql.cypher.ast.clause.match.pattern.*;
-import org.cytosm.cypher2sql.cypher.ast.clause.projection.*;
-
-import java.util.*;
-import java.util.Collection;
-import java.util.stream.Collectors;
+import org.cytosm.cypher2sql.lowering.typeck.expr.ExprVar;
+import org.cytosm.cypher2sql.lowering.typeck.rel.Relationship;
+import org.cytosm.cypher2sql.lowering.typeck.var.AliasVar;
+import org.cytosm.cypher2sql.lowering.typeck.var.NodeVar;
+import org.cytosm.cypher2sql.lowering.typeck.var.PathVar;
+import org.cytosm.cypher2sql.lowering.typeck.var.RelVar;
+import org.cytosm.cypher2sql.lowering.typeck.var.Var;
 
 /**
  * Data-structure that compute and encapsulate dependencies between
@@ -120,7 +143,7 @@ public class VarDependencies {
      */
     public List<Var> getUsedAndIndirectUsedVars(ClauseId clauseId) {
         // Start with the used variable.
-        Set<Var> result = new HashSet<>(this.getUsedVars(clauseId));
+        Set<Var> result = new LinkedHashSet<>(this.getUsedVars(clauseId));
         Stack<Var> stack = new Stack<>();
 
         List<Relationship> relsToInspect = relationships.entrySet().stream()
@@ -134,22 +157,22 @@ public class VarDependencies {
         while (!stack.isEmpty()) {
             Var var = stack.pop();
             if (var instanceof NodeVar) {
-                relsToInspect.stream().filter(r -> r.leftNode == var).forEach(rel -> {
-                    if (!result.contains(rel.rightNode)) {
-                        stack.add(rel.rightNode);
-                        result.add(rel.rightNode);
+                for (Relationship r : relsToInspect) {
+                    if (r.leftNode == var && !result.contains(r.rightNode)) {
+                        stack.add(r.rightNode);
+                        result.add(r.rightNode);
                     }
-                });
-                relsToInspect.stream().filter(r -> r.rightNode == var).forEach(rel -> {
-                    if (!result.contains(rel.leftNode)) {
+                }
+                for (Relationship rel : relsToInspect) {
+                    if (rel.rightNode == var && !result.contains(rel.leftNode)) {
                         stack.add(rel.leftNode);
                         result.add(rel.leftNode);
                     }
-                });
+                }
             }
         }
 
-        return Collections.unmodifiableList(result.stream().collect(Collectors.toList()));
+        return Collections.unmodifiableList(new ArrayList<>(result));
     }
 
     /**
