@@ -1,21 +1,21 @@
 package org.cytosm.cypher2sql.lowering;
 
-import org.cytosm.cypher2sql.lowering.exceptions.BugFound;
-import org.cytosm.cypher2sql.lowering.exceptions.Cypher2SqlException;
-import org.cytosm.cypher2sql.lowering.sqltree.SimpleSelect;
-import org.cytosm.cypher2sql.lowering.sqltree.ScopeSelect;
-import org.cytosm.cypher2sql.lowering.sqltree.from.FromItem;
-import org.cytosm.cypher2sql.lowering.sqltree.visitor.Walk;
-import org.cytosm.cypher2sql.lowering.typeck.expr.ExprVar;
-import org.cytosm.cypher2sql.lowering.typeck.types.VarType;
-import org.cytosm.cypher2sql.lowering.typeck.var.AliasVar;
-import org.cytosm.cypher2sql.lowering.typeck.expr.Expr;
-import org.cytosm.cypher2sql.lowering.typeck.var.Var;
-import org.cytosm.cypher2sql.lowering.typeck.expr.ExprTree;
-import org.cytosm.cypher2sql.lowering.typeck.expr.ExprWalk;
-
 import java.util.List;
 import java.util.Optional;
+
+import org.cytosm.cypher2sql.lowering.exceptions.BugFound;
+import org.cytosm.cypher2sql.lowering.exceptions.Cypher2SqlException;
+import org.cytosm.cypher2sql.lowering.sqltree.ScopeSelect;
+import org.cytosm.cypher2sql.lowering.sqltree.SimpleSelect;
+import org.cytosm.cypher2sql.lowering.sqltree.from.FromItem;
+import org.cytosm.cypher2sql.lowering.sqltree.visitor.Walk;
+import org.cytosm.cypher2sql.lowering.typeck.expr.Expr;
+import org.cytosm.cypher2sql.lowering.typeck.expr.ExprTree;
+import org.cytosm.cypher2sql.lowering.typeck.expr.ExprVar;
+import org.cytosm.cypher2sql.lowering.typeck.expr.ExprWalk;
+import org.cytosm.cypher2sql.lowering.typeck.types.VarType;
+import org.cytosm.cypher2sql.lowering.typeck.var.AliasVar;
+import org.cytosm.cypher2sql.lowering.typeck.var.Var;
 
 /**
  * This pass unwrap property accesses where possible.
@@ -66,7 +66,7 @@ public class UnwrapPropertyAccess {
         private void addVarToFromItemProvidingAlias(AliasVar aliasVar, Var var) throws Cypher2SqlException {
             Optional<FromItem> fromItem = this.fromItemsContext.stream()
                     .filter(x -> x.variables.stream().anyMatch(v -> v == aliasVar))
-                    .findAny();
+                    .findFirst();
             if (fromItem.isPresent()) {
                 fromItem.get().variables.add(var);
             } else {

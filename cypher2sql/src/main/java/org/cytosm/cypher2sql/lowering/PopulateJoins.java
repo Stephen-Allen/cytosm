@@ -1,5 +1,6 @@
 package org.cytosm.cypher2sql.lowering;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
@@ -118,15 +119,15 @@ public class PopulateJoins {
         public void visitSimpleSelect(SimpleSelect simpleSelect) throws Cypher2SqlException {
             List<Relationship> rels = vars.getRelationships(simpleSelect.varId);
 
-            List<FromItem> fromItems = simpleSelect.fromItem.stream().collect(Collectors.toList());
+            List<FromItem> fromItems = new ArrayList<>(simpleSelect.fromItem);
             for (Relationship rel: rels) {
 
                 FromItem leftNodeFi = fromItems.stream()
                         .filter(fi -> fi.variables.stream().anyMatch(var -> var == rel.leftNode))
-                        .findAny().get();
+                        .findFirst().get();
                 FromItem rightNodeFi = fromItems.stream()
                         .filter(fi -> fi.variables.stream().anyMatch(var -> var == rel.rightNode))
-                        .findAny().get();
+                        .findFirst().get();
 
                 String leftNodeOriginTableName = getOriginTableName(rel.leftNode, leftNodeFi);
                 String rightNodeOriginTableName = getOriginTableName(rel.rightNode, rightNodeFi);
@@ -159,8 +160,6 @@ public class PopulateJoins {
 
                 // FIXME: Manage arbitrary hops.
                 //
-                // FIXME: This code totally ignore directions...
-                //
                 TraversalHop traversalHop = edge.getPaths().get(0).getTraversalHops().get(0);
 
                 // First we create the Join itself and a TempVar
@@ -174,26 +173,41 @@ public class PopulateJoins {
                 joiningFrom.variables.add(joinVar);
                 join.joiningItem = joiningFrom;
 
-                // Condition on source:
-                Var source = getMatch(traversalHop.getSourceTableName(),
-                        leftNode, leftNodeOriginTableName,
-                        rightNode, rightNodeOriginTableName);
-                Expr conditionOnSource = new ExprTree.Eq(
-                        new ExprTree.PropertyAccess(traversalHop.getSourceTableColumn(), new ExprVar(source)),
-                        new ExprTree.PropertyAccess(traversalHop.getJoinTableSourceColumn(), new ExprVar(joinVar))
-                );
+                Var source;
+                Var destination;
+                switch (rel.direction) {
+                    case RIGHT:
+                        source = leftNode;
+                        destination = rightNode;
+                        break;
+                    case LEFT:
+                        source = rightNode;
+                        destination = leftNode;
+                        break;
+                    case BOTH:
+                        source = getMatch(traversalHop.getSourceTableName(),
+                            leftNode, leftNodeOriginTableName,
+                            rightNode, rightNodeOriginTableName);
+                        destination = getMatch(traversalHop.getDestinationTableName(),
+                            leftNode, leftNodeOriginTableName,
+                            rightNode, rightNodeOriginTableName);
 
-                // Condition on destination:
-                Var destination = getMatch(traversalHop.getDestinationTableName(),
-                        leftNode, leftNodeOriginTableName,
-                        rightNode, rightNodeOriginTableName);
-                // FIXME: If the two are equals then we should have a union instead.
-                if (destination == source) {
-                    destination = (destination == leftNode) ? rightNode : leftNode;
+                        // FIXME: If the direction is BOTH and the source table equals the destination table then we should have a union
+                        if (destination == source) {
+                            destination = (destination == leftNode) ? rightNode : leftNode;
+                        }
+                        break;
+                    default:
+                        throw new RuntimeException("Unknown direction");
                 }
+
+                Expr conditionOnSource = new ExprTree.Eq(
+                    new ExprTree.PropertyAccess(traversalHop.getSourceTableColumn(), new ExprVar(source)),
+                    new ExprTree.PropertyAccess(traversalHop.getJoinTableSourceColumn(), new ExprVar(joinVar))
+                );
                 Expr conditionOnDestination = new ExprTree.Eq(
-                        new ExprTree.PropertyAccess(traversalHop.getDestinationTableColumn(), new ExprVar(destination)),
-                        new ExprTree.PropertyAccess(traversalHop.getJoinTableDestinationColumn(), new ExprVar(joinVar))
+                    new ExprTree.PropertyAccess(traversalHop.getDestinationTableColumn(), new ExprVar(destination)),
+                    new ExprTree.PropertyAccess(traversalHop.getJoinTableDestinationColumn(), new ExprVar(joinVar))
                 );
 
                 // TODO(Joan): Write a test for this.
@@ -290,7 +304,7 @@ public class PopulateJoins {
 
                     Optional<FromItem> newSourceForVar = source.dependencies().stream()
                             .filter(varProvider -> varProvider.variables.stream().anyMatch(v -> v == var))
-                            .findAny();
+                            .findFirst();
 
                     Var resolvedVar = AliasVar.resolveAliasVar(var);
 

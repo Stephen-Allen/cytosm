@@ -81,7 +81,7 @@ public class CypherConverter extends CanonicalConverter {
 
                 final String variableReference = entry.getKey();
                 Optional<ExpansionElement> elementReferencedByVariable = elementList.stream()
-                        .filter(element -> element.getVariable().equals(variableReference)).findAny();
+                        .filter(element -> element.getVariable().equals(variableReference)).findFirst();
 
                 if (!elementReferencedByVariable.isPresent()) {
                     LOG.error("External context presented does not match any element in the relationship chain");

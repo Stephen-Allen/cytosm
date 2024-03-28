@@ -1,13 +1,13 @@
 package org.cytosm.cypher2sql.lowering.rendering;
 
+import java.util.List;
+import java.util.Optional;
+
 import org.cytosm.cypher2sql.lowering.sqltree.SQLNode;
 import org.cytosm.cypher2sql.lowering.sqltree.from.FromItem;
 import org.cytosm.cypher2sql.lowering.typeck.expr.ExprVar;
 import org.cytosm.cypher2sql.lowering.typeck.var.AliasVar;
 import org.cytosm.cypher2sql.lowering.typeck.var.Var;
-
-import java.util.List;
-import java.util.Optional;
 
 /**
  * The rendering context contains key information to know
@@ -133,7 +133,7 @@ public class RenderingContext {
     public Optional<FromItem> getSource(Var var) {
         return this.fromItems.stream()
                 .filter(x -> x.variables.stream().anyMatch(v -> v == var))
-                .findAny();
+                .findFirst();
     }
 
     /**
