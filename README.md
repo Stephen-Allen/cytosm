@@ -1,6 +1,7 @@
 # CYpher TO Sql Mapper (Cytosm)
 
-[![Build Status](https://travis-ci.org/cytosm/cytosm.svg?branch=master)](https://travis-ci.org/cytosm/cytosm.svg?branch=master)
+![GitHub Workflow Status](https://img.shields.io/github/actions/workflow/status/Stephen-Allen/cytosm/test.yml?branch=main)
+
 
 This is a fork of [Cytosm](https://github.com/cytosm/cytosm) with new features and bug fixes.
 
