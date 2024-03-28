@@ -1,16 +1,22 @@
 package org.cytosm.cypher2sql.lowering.sqltree.visitor;
 
-import static org.cytosm.cypher2sql.lowering.exceptions.fns.LambdaExceptionUtil.rethrowConsumer;
-import static org.cytosm.cypher2sql.lowering.exceptions.fns.LambdaExceptionUtil.rethrowFunction;
+import java.util.ArrayList;
+import java.util.List;
 
 import org.cytosm.cypher2sql.lowering.exceptions.Cypher2SqlException;
-import org.cytosm.cypher2sql.lowering.sqltree.*;
+import org.cytosm.cypher2sql.lowering.sqltree.BaseSelect;
+import org.cytosm.cypher2sql.lowering.sqltree.SQLNode;
+import org.cytosm.cypher2sql.lowering.sqltree.ScopeSelect;
+import org.cytosm.cypher2sql.lowering.sqltree.SimpleOrScopeSelect;
+import org.cytosm.cypher2sql.lowering.sqltree.SimpleSelect;
+import org.cytosm.cypher2sql.lowering.sqltree.SimpleSelectWithInnerJoins;
+import org.cytosm.cypher2sql.lowering.sqltree.SimpleSelectWithLeftJoins;
+import org.cytosm.cypher2sql.lowering.sqltree.UnionSelect;
+import org.cytosm.cypher2sql.lowering.sqltree.WithSelect;
 import org.cytosm.cypher2sql.lowering.sqltree.join.InnerJoin;
 import org.cytosm.cypher2sql.lowering.sqltree.join.LeftJoin;
 import org.cytosm.cypher2sql.lowering.typeck.expr.Expr;
 import org.cytosm.cypher2sql.lowering.typeck.expr.ExprWalk;
-
-import java.util.stream.Collectors;
 
 /**
  * Walking utilities.
@@ -53,7 +59,9 @@ public class Walk {
 
         @Override
         public void visitScopeSelect(ScopeSelect scopeSelect) throws Cypher2SqlException {
-            scopeSelect.withQueries.forEach(rethrowConsumer(this::visitWithSelect));
+            for (WithSelect withQuery : scopeSelect.withQueries) {
+                visitWithSelect(withQuery);
+            }
             walkSQLNode(this, scopeSelect.ret);
         }
 
@@ -83,29 +91,34 @@ public class Walk {
         @Override
         public void visitSimpleSelect(SimpleSelect simpleSelect) throws Cypher2SqlException {
             ExprWalk.Visitor visitor = makeExprVisitor();
-            simpleSelect.exportedItems.forEach(rethrowConsumer(e -> ExprWalk.walk(visitor, e)));
+            for (Expr e : simpleSelect.exportedItems) {
+                ExprWalk.walk(visitor, e);
+            }
 
             if (simpleSelect.whereCondition != null) {
                 ExprWalk.walk(visitor, simpleSelect.whereCondition);
             }
-            simpleSelect.orderBy.forEach(rethrowConsumer(
-                    oi -> ExprWalk.walk(visitor, oi.item)
-            ));
+            for (SimpleSelect.OrderItem oi : simpleSelect.orderBy) {
+                ExprWalk.walk(visitor, oi.item);
+            }
 
             if (simpleSelect instanceof SimpleSelectWithInnerJoins) {
-                ((SimpleSelectWithInnerJoins) simpleSelect).joins.forEach(
-                        rethrowConsumer(j -> ExprWalk.walk(visitor, j.condition))
-                );
-            } else {
-                ((SimpleSelectWithLeftJoins) simpleSelect).joins.forEach(
-                        rethrowConsumer(j -> ExprWalk.walk(visitor, j.condition))
-                );
+                for (InnerJoin j : ((SimpleSelectWithInnerJoins) simpleSelect).joins) {
+                    ExprWalk.walk(visitor, j.condition);
+                }
+            }
+            else {
+                for (LeftJoin j : ((SimpleSelectWithLeftJoins) simpleSelect).joins) {
+                    ExprWalk.walk(visitor, j.condition);
+                }
             }
         }
 
         @Override
         public void visitScopeSelect(ScopeSelect scopeSelect) throws Cypher2SqlException {
-            scopeSelect.withQueries.forEach(rethrowConsumer(this::visitWithSelect));
+            for (WithSelect withQuery : scopeSelect.withQueries) {
+                visitWithSelect(withQuery);
+            }
             walkSQLNode(this, scopeSelect.ret);
         }
 
@@ -136,32 +149,37 @@ public class Walk {
         @Override
         public void visitSimpleSelect(SimpleSelect simpleSelect) throws Cypher2SqlException {
             ExprWalk.IdentityFolder<Cypher2SqlException> folder = makeExprFolder(simpleSelect);
-            simpleSelect.exportedItems = simpleSelect.exportedItems.stream()
-                    .<Expr>map(rethrowFunction(
-                            e -> ExprWalk.<Expr, Cypher2SqlException>fold(folder, e)
-                    )).collect(Collectors.toList());
+            List<Expr> foldedExportItems = new ArrayList<>();
+            for (Expr e : simpleSelect.exportedItems) {
+                Expr fold = ExprWalk.fold(folder, e);
+                foldedExportItems.add(fold);
+            }
+            simpleSelect.exportedItems = foldedExportItems;
 
             if (simpleSelect.whereCondition != null) {
                 simpleSelect.whereCondition = ExprWalk.fold(folder, simpleSelect.whereCondition);
             }
-            simpleSelect.orderBy.forEach(rethrowConsumer(
-                oi -> oi.item = ExprWalk.<Expr, Cypher2SqlException>fold(folder, oi.item)
-            ));
+            for (SimpleSelect.OrderItem oi : simpleSelect.orderBy) {
+                oi.item = ExprWalk.fold(folder, oi.item);
+            }
 
             if (simpleSelect instanceof SimpleSelectWithInnerJoins) {
-                ((SimpleSelectWithInnerJoins) simpleSelect).joins.forEach(
-                        rethrowConsumer(j -> j.condition = ExprWalk.fold(folder, j.condition))
-                );
-            } else {
-                ((SimpleSelectWithLeftJoins) simpleSelect).joins.forEach(
-                        rethrowConsumer(j -> j.condition = ExprWalk.fold(folder, j.condition))
-                );
+                for (InnerJoin j : ((SimpleSelectWithInnerJoins) simpleSelect).joins) {
+                    j.condition = ExprWalk.fold(folder, j.condition);
+                }
+            }
+            else {
+                for (LeftJoin j : ((SimpleSelectWithLeftJoins) simpleSelect).joins) {
+                    j.condition = ExprWalk.fold(folder, j.condition);
+                }
             }
         }
 
         @Override
         public void visitScopeSelect(ScopeSelect scopeSelect) throws Cypher2SqlException {
-            scopeSelect.withQueries.forEach(rethrowConsumer(this::visitWithSelect));
+            for (WithSelect withQuery : scopeSelect.withQueries) {
+                visitWithSelect(withQuery);
+            }
             walkSQLNode(this, scopeSelect.ret);
         }
 

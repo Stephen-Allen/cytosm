@@ -1,12 +1,24 @@
 package org.cytosm.cypher2sql.expandpaths;
 
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.Iterator;
+import java.util.Map;
+import java.util.Optional;
+import java.util.Set;
+
+import org.apache.commons.lang3.tuple.Pair;
 import org.cytosm.cypher2sql.cypher.ast.clause.match.pattern.PatternElement;
 import org.cytosm.cypher2sql.cypher.ast.clause.match.pattern.RelationshipChain;
+import org.cytosm.cypher2sql.cypher.ast.expression.CaseExpression;
+import org.cytosm.cypher2sql.cypher.ast.expression.Expression;
+import org.cytosm.cypher2sql.cypher.ast.expression.FunctionInvocation;
+import org.cytosm.cypher2sql.cypher.ast.expression.Literal;
+import org.cytosm.cypher2sql.cypher.ast.expression.MapExpression;
+import org.cytosm.cypher2sql.cypher.ast.expression.PatternExpression;
+import org.cytosm.cypher2sql.cypher.ast.expression.Property;
+import org.cytosm.cypher2sql.cypher.ast.expression.Variable;
 import org.cytosm.cypher2sql.cypher.visitor.Walk;
-import org.cytosm.cypher2sql.cypher.ast.expression.*;
-
-import java.util.*;
-import java.util.stream.Stream;
 
 /**
  * Visitor that collects information about variables being used
@@ -83,8 +95,10 @@ public class VariableCollectorVisitor extends Walk.BaseExpressionVisitor {
     public void visitCaseExpression(CaseExpression a) {
         a.default_.ifPresent(d -> Walk.walkExpression(this, d));
         a.expression.ifPresent(d -> Walk.walkExpression(this, d));
-        a.alternatives.stream().flatMap(p -> Stream.of(p.getKey(), p.getValue()))
-                .forEach(al -> Walk.walkExpression(this, al));
+        for (Pair<Expression, Expression> p : a.alternatives) {
+            Walk.walkExpression(this, p.getKey());
+            Walk.walkExpression(this, p.getValue());
+        }
     }
 
     @Override

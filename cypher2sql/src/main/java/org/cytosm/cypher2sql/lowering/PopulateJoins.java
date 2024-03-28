@@ -1,12 +1,20 @@
 package org.cytosm.cypher2sql.lowering;
 
+import java.util.List;
+import java.util.Optional;
+import java.util.stream.Collectors;
+
 import org.cytosm.common.gtop.GTopInterface;
 import org.cytosm.common.gtop.implementation.relational.ImplementationEdge;
 import org.cytosm.common.gtop.implementation.relational.TraversalHop;
 import org.cytosm.cypher2sql.lowering.exceptions.BugFound;
 import org.cytosm.cypher2sql.lowering.exceptions.Cypher2SqlException;
 import org.cytosm.cypher2sql.lowering.exceptions.Unreachable;
-import org.cytosm.cypher2sql.lowering.sqltree.*;
+import org.cytosm.cypher2sql.lowering.sqltree.ScopeSelect;
+import org.cytosm.cypher2sql.lowering.sqltree.SimpleSelect;
+import org.cytosm.cypher2sql.lowering.sqltree.SimpleSelectWithInnerJoins;
+import org.cytosm.cypher2sql.lowering.sqltree.SimpleSelectWithLeftJoins;
+import org.cytosm.cypher2sql.lowering.sqltree.WithSelect;
 import org.cytosm.cypher2sql.lowering.sqltree.from.FromItem;
 import org.cytosm.cypher2sql.lowering.sqltree.join.BaseJoin;
 import org.cytosm.cypher2sql.lowering.sqltree.join.InnerJoin;
@@ -14,15 +22,12 @@ import org.cytosm.cypher2sql.lowering.sqltree.join.LeftJoin;
 import org.cytosm.cypher2sql.lowering.sqltree.visitor.Walk;
 import org.cytosm.cypher2sql.lowering.typeck.VarDependencies;
 import org.cytosm.cypher2sql.lowering.typeck.expr.Expr;
+import org.cytosm.cypher2sql.lowering.typeck.expr.ExprTree;
 import org.cytosm.cypher2sql.lowering.typeck.expr.ExprVar;
 import org.cytosm.cypher2sql.lowering.typeck.rel.Relationship;
-import org.cytosm.cypher2sql.lowering.typeck.var.*;
-import org.cytosm.cypher2sql.lowering.typeck.expr.ExprTree;
-
-import static org.cytosm.cypher2sql.lowering.exceptions.fns.LambdaExceptionUtil.rethrowConsumer;
-
-import java.util.*;
-import java.util.stream.Collectors;
+import org.cytosm.cypher2sql.lowering.typeck.var.AliasVar;
+import org.cytosm.cypher2sql.lowering.typeck.var.TempVar;
+import org.cytosm.cypher2sql.lowering.typeck.var.Var;
 
 /**
  * This pass moves FromItem that needs to be JOINs because
@@ -237,7 +242,9 @@ public class PopulateJoins {
 
         @Override
         public void visitScopeSelect(ScopeSelect scopeSelect) throws Cypher2SqlException {
-            scopeSelect.withQueries.forEach(rethrowConsumer(this::visitWithSelect));
+            for (WithSelect withQuery : scopeSelect.withQueries) {
+                visitWithSelect(withQuery);
+            }
         }
 
         private static BaseJoin createJoin(SimpleSelect select) throws Cypher2SqlException {

@@ -1,15 +1,24 @@
 package org.cytosm.cypher2sql.expandpaths;
 
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Iterator;
+import java.util.LinkedHashSet;
+import java.util.List;
+import java.util.Map;
+import java.util.Optional;
+import java.util.Set;
 
+import org.cytosm.cypher2sql.cypher.ast.SingleQuery;
+import org.cytosm.cypher2sql.cypher.ast.Statement;
+import org.cytosm.cypher2sql.cypher.ast.clause.Clause;
+import org.cytosm.cypher2sql.cypher.ast.clause.Where;
+import org.cytosm.cypher2sql.cypher.ast.clause.match.Match;
+import org.cytosm.cypher2sql.cypher.ast.clause.projection.Return;
+import org.cytosm.cypher2sql.cypher.ast.clause.projection.ReturnItem;
+import org.cytosm.cypher2sql.cypher.ast.clause.projection.With;
 import org.cytosm.cypher2sql.cypher.parser.ASTBuilder;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-
-import org.cytosm.cypher2sql.cypher.ast.*;
-import org.cytosm.cypher2sql.cypher.ast.clause.*;
-import org.cytosm.cypher2sql.cypher.ast.clause.match.*;
-import org.cytosm.cypher2sql.cypher.ast.clause.projection.*;
 
 /**
  * Splits the cypher text into a list of path elements, the WITH parts are also in there as a
@@ -67,7 +76,9 @@ public class ExtractPath {
                     exprVisitor.collectVarInfos(where.expression);
 
                     Map<String, Set<String>> hints = exprVisitor.getVars();
-                    pathsSpecificToMatchClause.forEach(p -> p.addHints(hints));
+                    for (PathPlusHints p : pathsSpecificToMatchClause) {
+                        p.addHints(hints);
+                    }
                 }
 
                 // Finally add the PathPlusHints to the list of collected things.
@@ -97,19 +108,19 @@ public class ExtractPath {
         for (PathPlusHints pathAndHint : matches) {
             final Map<String, Set<String>> hintsOnPath = pathAndHint.getHints();
 
-            returnHints.entrySet().forEach(variableHint -> {
-
-                Set<String> hintsOnThatVariable = null;
+            for (Map.Entry<String, Set<String>> variableHint : returnHints.entrySet()) {
+                final Set<String> hintsOnThatVariable;
                 if (hintsOnPath.containsKey(variableHint.getKey())) {
                     hintsOnThatVariable = hintsOnPath.get(variableHint.getKey());
-                } else {
+                }
+                else {
                     hintsOnThatVariable = new LinkedHashSet<>();
                 }
 
                 hintsOnThatVariable.addAll(variableHint.getValue());
 
                 hintsOnPath.put(variableHint.getKey(), hintsOnThatVariable);
-            });
+            }
         }
     }
 }

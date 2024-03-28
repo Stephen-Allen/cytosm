@@ -1,13 +1,12 @@
 package org.cytosm.cypher2sql.lowering;
 
-import org.cytosm.cypher2sql.lowering.exceptions.Cypher2SqlException;
-import org.cytosm.cypher2sql.lowering.sqltree.ScopeSelect;
-import org.cytosm.cypher2sql.lowering.sqltree.visitor.Walk;
-import org.cytosm.cypher2sql.lowering.typeck.expr.ExprTree;
-
 import java.util.stream.Collectors;
 
-import static org.cytosm.cypher2sql.lowering.exceptions.fns.LambdaExceptionUtil.rethrowConsumer;
+import org.cytosm.cypher2sql.lowering.exceptions.Cypher2SqlException;
+import org.cytosm.cypher2sql.lowering.sqltree.ScopeSelect;
+import org.cytosm.cypher2sql.lowering.sqltree.WithSelect;
+import org.cytosm.cypher2sql.lowering.sqltree.visitor.Walk;
+import org.cytosm.cypher2sql.lowering.typeck.expr.ExprTree;
 
 /**
  * This pass unwrap alias expr on nested ScopeSelect
@@ -24,7 +23,9 @@ public class UnwrapAliasExpr {
      * @param sqltree is the SQL tree.
      */
     public static void visitAndUnwrap(ScopeSelect sqltree) throws Cypher2SqlException {
-        sqltree.withQueries.forEach(rethrowConsumer(wq -> Walk.walkSQLNode(new Visitor(), wq)));
+        for (WithSelect wq : sqltree.withQueries) {
+            Walk.walkSQLNode(new Visitor(), wq);
+        }
     }
 
     private static class Visitor extends Walk.BaseSQLNodeVisitor {

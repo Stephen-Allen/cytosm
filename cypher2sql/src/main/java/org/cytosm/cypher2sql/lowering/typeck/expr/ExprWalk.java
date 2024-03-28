@@ -1,13 +1,13 @@
 package org.cytosm.cypher2sql.lowering.typeck.expr;
 
-import org.cytosm.cypher2sql.lowering.typeck.var.AliasVar;
-import org.cytosm.cypher2sql.lowering.typeck.constexpr.ConstVal;
-import org.apache.commons.lang3.tuple.ImmutablePair;
-import org.apache.commons.lang3.tuple.Pair;
-
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
+
+import org.apache.commons.lang3.tuple.ImmutablePair;
+import org.apache.commons.lang3.tuple.Pair;
+import org.cytosm.cypher2sql.lowering.typeck.constexpr.ConstVal;
+import org.cytosm.cypher2sql.lowering.typeck.var.AliasVar;
 
 /**
  * Walk utilities for expressions.
@@ -52,7 +52,9 @@ public class ExprWalk {
 
         @Override
         public void visitFn(ExprFn expr) {
-            expr.args.forEach(x -> walk(this, x));
+            for (Expr x : expr.args) {
+                walk(this, x);
+            }
         }
 
         @Override
@@ -60,12 +62,16 @@ public class ExprWalk {
 
         @Override
         public void visitListExpr(ExprTree.ListExpr expr) {
-            expr.exprs.forEach(x -> walk(this, x));
+            for (Expr x : expr.exprs) {
+                walk(this, x);
+            }
         }
 
         @Override
         public void visitMapExpr(ExprTree.MapExpr expr) {
-            expr.props.entrySet().forEach(x -> walk(this, x.getValue()));
+            for (Map.Entry<String, Expr> x : expr.props.entrySet()) {
+                walk(this, x.getValue());
+            }
         }
 
         @Override

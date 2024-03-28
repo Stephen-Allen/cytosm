@@ -1,17 +1,26 @@
 package org.cytosm.cypher2sql.lowering.typeck;
 
+import java.util.Map;
+
 import org.cytosm.cypher2sql.lowering.exceptions.BugFound;
 import org.cytosm.cypher2sql.lowering.exceptions.Cypher2SqlException;
 import org.cytosm.cypher2sql.lowering.exceptions.TypeError;
 import org.cytosm.cypher2sql.lowering.exceptions.Unimplemented;
-import org.cytosm.cypher2sql.lowering.typeck.expr.*;
-import org.cytosm.cypher2sql.lowering.typeck.types.*;
-import org.cytosm.cypher2sql.lowering.typeck.var.AliasVar;
 import org.cytosm.cypher2sql.lowering.typeck.constexpr.ConstVal;
-
-import static org.cytosm.cypher2sql.lowering.exceptions.fns.LambdaExceptionUtil.rethrowConsumer;
-
-import java.util.Map;
+import org.cytosm.cypher2sql.lowering.typeck.expr.Expr;
+import org.cytosm.cypher2sql.lowering.typeck.expr.ExprFn;
+import org.cytosm.cypher2sql.lowering.typeck.expr.ExprTree;
+import org.cytosm.cypher2sql.lowering.typeck.expr.ExprVar;
+import org.cytosm.cypher2sql.lowering.typeck.expr.ExprWalk;
+import org.cytosm.cypher2sql.lowering.typeck.types.AType;
+import org.cytosm.cypher2sql.lowering.typeck.types.BoolType;
+import org.cytosm.cypher2sql.lowering.typeck.types.MapType;
+import org.cytosm.cypher2sql.lowering.typeck.types.NodeType;
+import org.cytosm.cypher2sql.lowering.typeck.types.NumberType;
+import org.cytosm.cypher2sql.lowering.typeck.types.RelType;
+import org.cytosm.cypher2sql.lowering.typeck.types.StringType;
+import org.cytosm.cypher2sql.lowering.typeck.var.AliasVar;
+import org.cytosm.cypher2sql.lowering.typeck.var.Var;
 
 /**
  */
@@ -22,10 +31,12 @@ public class ComputeAliasVarType {
      * @param vars is the variable dependency tracker.
      */
     public static void computeAliasVarTypes(VarDependencies vars) throws Cypher2SqlException {
-        vars.getAllVariables().stream()
-                .filter(x -> x instanceof AliasVar)
-                .map(x -> (AliasVar) x)
-                .forEach(rethrowConsumer(ComputeAliasVarType::computeAliasVarType));
+        for (Var x : vars.getAllVariables()) {
+            if (x instanceof AliasVar) {
+                AliasVar aliasVar = (AliasVar) x;
+                computeAliasVarType(aliasVar);
+            }
+        }
     }
 
     private static void computeAliasVarType(AliasVar var) throws Cypher2SqlException {

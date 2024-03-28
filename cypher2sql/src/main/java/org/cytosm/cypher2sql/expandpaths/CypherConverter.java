@@ -1,25 +1,35 @@
 package org.cytosm.cypher2sql.expandpaths;
 
-import java.util.*;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.Iterator;
+import java.util.List;
+import java.util.Map;
+import java.util.Optional;
+import java.util.OptionalLong;
 import java.util.stream.Collectors;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-import org.cytosm.cypher2sql.cypher.parser.ASTBuilder;
-import org.cytosm.cypher2sql.cypher.constexpr.ConstExpressionFolder;
-import org.cytosm.pathfinder.input.CanonicalConverter;
 import org.apache.commons.collections4.MapUtils;
 import org.apache.commons.lang3.StringUtils;
-
+import org.cytosm.cypher2sql.cypher.ast.clause.match.pattern.LabelName;
+import org.cytosm.cypher2sql.cypher.ast.clause.match.pattern.NodePattern;
+import org.cytosm.cypher2sql.cypher.ast.clause.match.pattern.Pattern;
+import org.cytosm.cypher2sql.cypher.ast.clause.match.pattern.PatternElement;
+import org.cytosm.cypher2sql.cypher.ast.clause.match.pattern.PatternPart;
+import org.cytosm.cypher2sql.cypher.ast.clause.match.pattern.Range;
+import org.cytosm.cypher2sql.cypher.ast.clause.match.pattern.RelationshipChain;
+import org.cytosm.cypher2sql.cypher.ast.clause.match.pattern.RelationshipPattern;
+import org.cytosm.cypher2sql.cypher.ast.clause.match.pattern.RelationshipPattern.SemanticDirection;
+import org.cytosm.cypher2sql.cypher.ast.expression.MapExpression;
+import org.cytosm.cypher2sql.cypher.constexpr.ConstExpressionFolder;
+import org.cytosm.cypher2sql.cypher.parser.ASTBuilder;
 import org.cytosm.pathfinder.CanonicalRoutes;
+import org.cytosm.pathfinder.input.CanonicalConverter;
 import org.cytosm.pathfinder.routeelements.ExpansionEdge;
 import org.cytosm.pathfinder.routeelements.ExpansionElement;
 import org.cytosm.pathfinder.routeelements.ExpansionNode;
-import org.cytosm.cypher2sql.cypher.ast.clause.match.pattern.RelationshipPattern.SemanticDirection;
-import org.cytosm.cypher2sql.cypher.ast.clause.match.pattern.*;
-import org.cytosm.cypher2sql.cypher.ast.expression.*;
-
-import java.util.Iterator;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /***
  * Converts from Cypher to {@link CanonicalRoutes}.
@@ -127,7 +137,11 @@ public class CypherConverter extends CanonicalConverter {
 
             // With a MapExpression such as the one given previously, we
             // would collect id as a string.
-            res.forEach((key, val) -> attributes.put(key, val.toString()));
+            for (Map.Entry<String, Object> entry : res.entrySet()) {
+                final String key = entry.getKey();
+                final Object val = entry.getValue();
+                attributes.put(key, val.toString());
+            }
         }
 
         // check if directed
@@ -223,7 +237,11 @@ public class CypherConverter extends CanonicalConverter {
 
             // With a MapExpression such as the one given previously, we
             // would collect id as a string.
-            res.forEach((key, val) -> attributes.put(key, val.toString()));
+            for (Map.Entry<String, Object> entry : res.entrySet()) {
+                final String key = entry.getKey();
+                final Object val = entry.getValue();
+                attributes.put(key, val.toString());
+            }
         }
 
         Iterator<LabelName> iter = node.labels.iterator();

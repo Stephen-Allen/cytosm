@@ -1,19 +1,28 @@
 package org.cytosm.cypher2sql;
 
+import java.util.ArrayList;
+import java.util.List;
+
 import org.cytosm.common.gtop.GTopInterface;
+import org.cytosm.cypher2sql.cypher.ast.Statement;
+import org.cytosm.cypher2sql.cypher.parser.ASTBuilder;
 import org.cytosm.cypher2sql.expandpaths.ExpandCypher;
-import org.cytosm.cypher2sql.lowering.*;
+import org.cytosm.cypher2sql.lowering.ComputeExports;
+import org.cytosm.cypher2sql.lowering.ComputeFromItems;
+import org.cytosm.cypher2sql.lowering.ExpandNodeVarWithGtop;
+import org.cytosm.cypher2sql.lowering.MergeExpandedCyphers;
+import org.cytosm.cypher2sql.lowering.MoveRestrictionInPattern;
+import org.cytosm.cypher2sql.lowering.NameSubqueries;
+import org.cytosm.cypher2sql.lowering.PopulateJoins;
+import org.cytosm.cypher2sql.lowering.SelectTreeBuilder;
+import org.cytosm.cypher2sql.lowering.TransformFunctions;
+import org.cytosm.cypher2sql.lowering.UnwrapAliasExpr;
+import org.cytosm.cypher2sql.lowering.UnwrapAliasVar;
+import org.cytosm.cypher2sql.lowering.UnwrapPropertyAccess;
 import org.cytosm.cypher2sql.lowering.exceptions.Cypher2SqlException;
 import org.cytosm.cypher2sql.lowering.sqltree.ScopeSelect;
 import org.cytosm.cypher2sql.lowering.typeck.ComputeAliasVarType;
 import org.cytosm.cypher2sql.lowering.typeck.VarDependencies;
-import org.cytosm.cypher2sql.cypher.ast.Statement;
-import org.cytosm.cypher2sql.cypher.parser.ASTBuilder;
-
-import static org.cytosm.cypher2sql.lowering.exceptions.fns.LambdaExceptionUtil.rethrowFunction;
-
-import java.util.List;
-import java.util.stream.Collectors;
 
 /**
  */
@@ -177,9 +186,11 @@ public class PassAvailables {
     public static ScopeSelect cypher2sqlTree(final GTopInterface gtopInterface, final String originalCypher) throws Cypher2SqlException {
         List<String> cyphers = ExpandCypher.expandCypher(gtopInterface, originalCypher);
 
-        List<ScopeSelect> allQ = cyphers.stream()
-                .<ScopeSelect>map(rethrowFunction(cypher -> cypher2sqlOnExpandedPaths(gtopInterface, cypher)))
-                .collect(Collectors.toList());
+        List<ScopeSelect> allQ = new ArrayList<>();
+        for (String cypher : cyphers) {
+            final ScopeSelect scopeSelect = cypher2sqlOnExpandedPaths(gtopInterface, cypher);
+            allQ.add(scopeSelect);
+        }
 
         // Merge expanded cypher together.
         ScopeSelect query = MergeExpandedCyphers.merge(allQ);

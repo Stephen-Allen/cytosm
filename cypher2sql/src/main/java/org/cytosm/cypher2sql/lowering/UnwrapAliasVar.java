@@ -1,22 +1,22 @@
 package org.cytosm.cypher2sql.lowering;
 
+import java.util.HashMap;
+import java.util.Map;
+
 import org.cytosm.cypher2sql.lowering.exceptions.Cypher2SqlException;
 import org.cytosm.cypher2sql.lowering.sqltree.ScopeSelect;
 import org.cytosm.cypher2sql.lowering.sqltree.SimpleSelect;
+import org.cytosm.cypher2sql.lowering.sqltree.WithSelect;
 import org.cytosm.cypher2sql.lowering.sqltree.visitor.Walk;
+import org.cytosm.cypher2sql.lowering.typeck.constexpr.ConstExprFolder;
+import org.cytosm.cypher2sql.lowering.typeck.expr.Expr;
 import org.cytosm.cypher2sql.lowering.typeck.expr.ExprVar;
+import org.cytosm.cypher2sql.lowering.typeck.expr.ExprWalk;
 import org.cytosm.cypher2sql.lowering.typeck.types.BoolType;
 import org.cytosm.cypher2sql.lowering.typeck.types.NumberType;
 import org.cytosm.cypher2sql.lowering.typeck.types.StringType;
 import org.cytosm.cypher2sql.lowering.typeck.var.AliasVar;
-import org.cytosm.cypher2sql.lowering.typeck.expr.Expr;
 import org.cytosm.cypher2sql.lowering.typeck.var.Var;
-import org.cytosm.cypher2sql.lowering.typeck.constexpr.ConstExprFolder;
-import org.cytosm.cypher2sql.lowering.typeck.expr.ExprWalk;
-
-import java.util.*;
-
-import static org.cytosm.cypher2sql.lowering.exceptions.fns.LambdaExceptionUtil.rethrowConsumer;
 
 
 /**
@@ -87,7 +87,9 @@ public class UnwrapAliasVar {
             ScopeSelect parentScope = currentScopeSelect;
             currentScopeSelect = scopeSelect;
             useCount.put(scopeSelect, new HashMap<>());
-            scopeSelect.withQueries.forEach(rethrowConsumer(this::visitWithSelect));
+            for (WithSelect withQuery : scopeSelect.withQueries) {
+                visitWithSelect(withQuery);
+            }
             defaultCountValue = 1;
             this.visitSimpleSelect(scopeSelect.ret);
             defaultCountValue = 0;

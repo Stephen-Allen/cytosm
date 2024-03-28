@@ -1,22 +1,28 @@
 package org.cytosm.cypher2sql.lowering;
 
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.stream.Collectors;
+
 import org.cytosm.common.gtop.GTopInterface;
 import org.cytosm.common.gtop.implementation.relational.ImplementationNode;
 import org.cytosm.cypher2sql.lowering.exceptions.Cypher2SqlException;
 import org.cytosm.cypher2sql.lowering.sqltree.ScopeSelect;
 import org.cytosm.cypher2sql.lowering.sqltree.SimpleSelect;
+import org.cytosm.cypher2sql.lowering.sqltree.WithSelect;
 import org.cytosm.cypher2sql.lowering.sqltree.visitor.Walk;
-import org.cytosm.cypher2sql.lowering.typeck.expr.*;
-import org.cytosm.cypher2sql.lowering.typeck.types.PathType;
-import org.cytosm.cypher2sql.lowering.typeck.var.*;
 import org.cytosm.cypher2sql.lowering.typeck.constexpr.ConstVal;
-
-import static org.cytosm.cypher2sql.lowering.exceptions.fns.LambdaExceptionUtil.rethrowFunction;
-import static org.cytosm.cypher2sql.lowering.exceptions.fns.LambdaExceptionUtil.rethrowConsumer;
-
-import java.util.HashMap;
-import java.util.List;
-import java.util.stream.Collectors;
+import org.cytosm.cypher2sql.lowering.typeck.expr.Expr;
+import org.cytosm.cypher2sql.lowering.typeck.expr.ExprFn;
+import org.cytosm.cypher2sql.lowering.typeck.expr.ExprTree;
+import org.cytosm.cypher2sql.lowering.typeck.expr.ExprVar;
+import org.cytosm.cypher2sql.lowering.typeck.expr.ExprWalk;
+import org.cytosm.cypher2sql.lowering.typeck.types.PathType;
+import org.cytosm.cypher2sql.lowering.typeck.var.AliasVar;
+import org.cytosm.cypher2sql.lowering.typeck.var.NodeVar;
+import org.cytosm.cypher2sql.lowering.typeck.var.PathVar;
+import org.cytosm.cypher2sql.lowering.typeck.var.Var;
 
 /**
  * This class collect passes that transform functions
@@ -90,7 +96,9 @@ public class TransformFunctions {
             // we always go from the cypher name count to the SQL count.
 
             NameFnExpr namer = new NameFnExpr(gtop, COUNT, ExprFn.Name.COUNT);
-            simpleSelect.exportedItems.forEach(e -> ExprWalk.walk(namer, e));
+            for (Expr e : simpleSelect.exportedItems) {
+                ExprWalk.walk(namer, e);
+            }
         }
 
         @Override
@@ -98,11 +106,16 @@ public class TransformFunctions {
             NameFnExpr namer;
             if (this.scopeIsLeaf.get(scopeSelect)) {
                 namer = new NameFnExpr(gtop, COUNT, ExprFn.Name.COUNT);
-            } else {
+            }
+            else {
                 namer = new NameFnExpr(gtop, COUNT, ExprFn.Name.SUM);
             }
-            scopeSelect.ret.exportedItems.forEach(e -> ExprWalk.walk(namer, e));
-            scopeSelect.withQueries.forEach(rethrowConsumer(this::visitWithSelect));
+            for (Expr e : scopeSelect.ret.exportedItems) {
+                ExprWalk.walk(namer, e);
+            }
+            for (WithSelect withQuery : scopeSelect.withQueries) {
+                visitWithSelect(withQuery);
+            }
         }
     }
 
@@ -164,9 +177,12 @@ public class TransformFunctions {
         @Override
         public void visitSimpleSelect(SimpleSelect simpleSelect) throws Cypher2SqlException {
             PathLengthFolder folder = new PathLengthFolder();
-            simpleSelect.exportedItems = simpleSelect.exportedItems.stream()
-                    .<Expr>map(rethrowFunction(e -> ExprWalk.<Expr, Cypher2SqlException>fold(folder, e)))
-                    .collect(Collectors.toList());
+            List<Expr> foldedExportItems = new ArrayList<>();
+            for (Expr e : simpleSelect.exportedItems) {
+                Expr fold = ExprWalk.fold(folder, e);
+                foldedExportItems.add(fold);
+            }
+            simpleSelect.exportedItems = foldedExportItems;
 
             simpleSelect.whereCondition = ExprWalk.fold(folder, simpleSelect.whereCondition);
         }
@@ -208,9 +224,12 @@ public class TransformFunctions {
         @Override
         public void visitSimpleSelect(SimpleSelect simpleSelect) throws Cypher2SqlException {
             PassThroughFolder folder = new PassThroughFolder();
-            simpleSelect.exportedItems = simpleSelect.exportedItems.stream()
-                .<Expr>map(rethrowFunction(e -> ExprWalk.<Expr, Cypher2SqlException>fold(folder, e)))
-                .collect(Collectors.toList());
+            List<Expr> foldedExportItems = new ArrayList<>();
+            for (Expr e : simpleSelect.exportedItems) {
+                Expr fold = ExprWalk.fold(folder, e);
+                foldedExportItems.add(fold);
+            }
+            simpleSelect.exportedItems = foldedExportItems;
 
             simpleSelect.whereCondition = ExprWalk.fold(folder, simpleSelect.whereCondition);
         }

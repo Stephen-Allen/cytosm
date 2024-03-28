@@ -1,6 +1,11 @@
 package org.cytosm.cypher2sql.expandpaths;
 
-import java.util.*;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.LinkedHashSet;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
 
 /**
  * Contains the path from the Cypher plus any corresponding hints, for example match (a) where
@@ -67,10 +72,10 @@ public class PathPlusHints {
      */
     public Map<String, List<String>> getHintsIntoList() {
         Map<String, List<String>> result = new HashMap<>();
-        this.hints.entrySet().forEach(entry -> {
+        for (Map.Entry<String, Set<String>> entry : this.hints.entrySet()) {
             List<String> value = new ArrayList<>(entry.getValue());
             result.put(entry.getKey(), value);
-        });
+        }
         return result;
     }
 

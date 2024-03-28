@@ -1,21 +1,20 @@
 package org.cytosm.cypher2sql.lowering;
 
+import java.util.stream.Collectors;
+
 import org.cytosm.cypher2sql.lowering.exceptions.Cypher2SqlException;
-import org.cytosm.cypher2sql.lowering.sqltree.*;
+import org.cytosm.cypher2sql.lowering.sqltree.ScopeSelect;
+import org.cytosm.cypher2sql.lowering.sqltree.SimpleSelect;
+import org.cytosm.cypher2sql.lowering.sqltree.WithSelect;
 import org.cytosm.cypher2sql.lowering.sqltree.join.BaseJoin;
 import org.cytosm.cypher2sql.lowering.sqltree.visitor.Walk;
 import org.cytosm.cypher2sql.lowering.typeck.VarDependencies;
+import org.cytosm.cypher2sql.lowering.typeck.expr.Expr;
+import org.cytosm.cypher2sql.lowering.typeck.expr.ExprTree;
 import org.cytosm.cypher2sql.lowering.typeck.expr.ExprVar;
+import org.cytosm.cypher2sql.lowering.typeck.expr.ExprWalk;
 import org.cytosm.cypher2sql.lowering.typeck.var.AliasVar;
 import org.cytosm.cypher2sql.lowering.typeck.var.NodeVar;
-import org.cytosm.cypher2sql.lowering.typeck.expr.Expr;
-import org.cytosm.cypher2sql.lowering.typeck.var.Var;
-import org.cytosm.cypher2sql.lowering.typeck.expr.ExprTree;
-import org.cytosm.cypher2sql.lowering.typeck.expr.ExprWalk;
-
-import static org.cytosm.cypher2sql.lowering.exceptions.fns.LambdaExceptionUtil.rethrowConsumer;
-
-import java.util.stream.Collectors;
 
 /**
  * This pass compute exports for each SELECT.
@@ -87,7 +86,9 @@ public class ComputeExports {
 
         @Override
         public void visitScopeSelect(ScopeSelect scopeSelect) throws Cypher2SqlException {
-            scopeSelect.withQueries.forEach(rethrowConsumer(this::visitWithSelect));
+            for (WithSelect withQuery : scopeSelect.withQueries) {
+                visitWithSelect(withQuery);
+            }
 
             scopeSelect.ret.exportedItems = vars.getReturnExprs();
         }

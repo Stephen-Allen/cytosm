@@ -1,20 +1,28 @@
 package org.cytosm.cypher2sql.lowering;
 
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Comparator;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
+import java.util.TreeSet;
+import java.util.stream.Collectors;
+
 import org.cytosm.common.gtop.GTopInterface;
 import org.cytosm.common.gtop.implementation.relational.ImplementationNode;
 import org.cytosm.cypher2sql.lowering.exceptions.BugFound;
 import org.cytosm.cypher2sql.lowering.exceptions.Cypher2SqlException;
 import org.cytosm.cypher2sql.lowering.exceptions.Unreachable;
-import org.cytosm.cypher2sql.lowering.sqltree.*;
+import org.cytosm.cypher2sql.lowering.sqltree.BaseSelect;
+import org.cytosm.cypher2sql.lowering.sqltree.ScopeSelect;
+import org.cytosm.cypher2sql.lowering.sqltree.SimpleOrScopeSelect;
+import org.cytosm.cypher2sql.lowering.sqltree.SimpleSelect;
+import org.cytosm.cypher2sql.lowering.sqltree.UnionSelect;
+import org.cytosm.cypher2sql.lowering.sqltree.WithSelect;
 import org.cytosm.cypher2sql.lowering.sqltree.from.FromItem;
 import org.cytosm.cypher2sql.lowering.sqltree.visitor.Walk;
 import org.cytosm.cypher2sql.lowering.typeck.var.NodeVar;
-
-import static org.cytosm.cypher2sql.lowering.exceptions.fns.LambdaExceptionUtil.rethrowIntFunction;
-
-import java.util.*;
-import java.util.stream.Collectors;
-import java.util.stream.IntStream;
 
 /**
  * Expand the NodeVar using GTop. This pass assumes
@@ -256,12 +264,16 @@ public class ExpandNodeVarWithGtop {
             // 2. Create empty ScopeSelects and the Union containing them
             UnionSelect unionSelect = new UnionSelect();
             unionSelect.varId = oldSqlTree.varId;
-            unionSelect.unions = IntStream.range(0, numberOfNewScopeSelects)
-                    .<ScopeSelect>mapToObj(rethrowIntFunction(id -> partialClone(oldSqlTree, id)))
-                    .collect(Collectors.toList());
+            unionSelect.unions = new ArrayList<>();
+            for (int id = 0; id < numberOfNewScopeSelects; id++) {
+                final ScopeSelect scopeSelect = partialClone(oldSqlTree, id);
+                unionSelect.unions.add(scopeSelect);
+            }
 
             // 3. Update all froms to point to the correct new WithSelect.
-            unionSelect.unions.forEach(BubbleUnions::updateAllFroms);
+            for (SimpleOrScopeSelect union : unionSelect.unions) {
+                updateAllFroms(union);
+            }
 
             // 4. Create the outer ScopeSelect
             ScopeSelect newSqlTree = new ScopeSelect();

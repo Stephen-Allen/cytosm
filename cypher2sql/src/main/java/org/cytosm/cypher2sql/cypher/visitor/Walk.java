@@ -1,17 +1,64 @@
 package org.cytosm.cypher2sql.cypher.visitor;
 
+import java.util.Iterator;
+import java.util.List;
+import java.util.Optional;
+
 import org.apache.commons.lang3.tuple.Pair;
+import org.cytosm.cypher2sql.cypher.ast.ASTNode;
+import org.cytosm.cypher2sql.cypher.ast.Query;
+import org.cytosm.cypher2sql.cypher.ast.SingleQuery;
+import org.cytosm.cypher2sql.cypher.ast.Union;
+import org.cytosm.cypher2sql.cypher.ast.clause.Clause;
+import org.cytosm.cypher2sql.cypher.ast.clause.Where;
+import org.cytosm.cypher2sql.cypher.ast.clause.match.Match;
+import org.cytosm.cypher2sql.cypher.ast.clause.match.pattern.LabelName;
+import org.cytosm.cypher2sql.cypher.ast.clause.match.pattern.NodePattern;
+import org.cytosm.cypher2sql.cypher.ast.clause.match.pattern.Pattern;
+import org.cytosm.cypher2sql.cypher.ast.clause.match.pattern.Range;
+import org.cytosm.cypher2sql.cypher.ast.clause.match.pattern.RelTypeName;
+import org.cytosm.cypher2sql.cypher.ast.clause.match.pattern.RelationshipChain;
+import org.cytosm.cypher2sql.cypher.ast.clause.match.pattern.RelationshipPattern;
+import org.cytosm.cypher2sql.cypher.ast.clause.projection.Limit;
+import org.cytosm.cypher2sql.cypher.ast.clause.projection.OrderBy;
+import org.cytosm.cypher2sql.cypher.ast.clause.projection.Return;
+import org.cytosm.cypher2sql.cypher.ast.clause.projection.ReturnItem;
+import org.cytosm.cypher2sql.cypher.ast.clause.projection.SortItem;
+import org.cytosm.cypher2sql.cypher.ast.clause.projection.With;
+import org.cytosm.cypher2sql.cypher.ast.expression.Binary.Add;
+import org.cytosm.cypher2sql.cypher.ast.expression.Binary.And;
+import org.cytosm.cypher2sql.cypher.ast.expression.Binary.Contains;
+import org.cytosm.cypher2sql.cypher.ast.expression.Binary.Divide;
+import org.cytosm.cypher2sql.cypher.ast.expression.Binary.EndsWith;
+import org.cytosm.cypher2sql.cypher.ast.expression.Binary.Equals;
+import org.cytosm.cypher2sql.cypher.ast.expression.Binary.GreaterThan;
+import org.cytosm.cypher2sql.cypher.ast.expression.Binary.GreaterThanOrEqual;
+import org.cytosm.cypher2sql.cypher.ast.expression.Binary.In;
+import org.cytosm.cypher2sql.cypher.ast.expression.Binary.InvalidNotEquals;
+import org.cytosm.cypher2sql.cypher.ast.expression.Binary.LessThan;
+import org.cytosm.cypher2sql.cypher.ast.expression.Binary.LessThanOrEqual;
+import org.cytosm.cypher2sql.cypher.ast.expression.Binary.Modulo;
+import org.cytosm.cypher2sql.cypher.ast.expression.Binary.Multiply;
+import org.cytosm.cypher2sql.cypher.ast.expression.Binary.NotEquals;
+import org.cytosm.cypher2sql.cypher.ast.expression.Binary.Or;
+import org.cytosm.cypher2sql.cypher.ast.expression.Binary.Pow;
+import org.cytosm.cypher2sql.cypher.ast.expression.Binary.RegexMatch;
+import org.cytosm.cypher2sql.cypher.ast.expression.Binary.StartsWith;
+import org.cytosm.cypher2sql.cypher.ast.expression.Binary.Subtract;
+import org.cytosm.cypher2sql.cypher.ast.expression.Binary.Xor;
+import org.cytosm.cypher2sql.cypher.ast.expression.CaseExpression;
+import org.cytosm.cypher2sql.cypher.ast.expression.Expression;
+import org.cytosm.cypher2sql.cypher.ast.expression.FunctionInvocation;
+import org.cytosm.cypher2sql.cypher.ast.expression.ListExpression;
+import org.cytosm.cypher2sql.cypher.ast.expression.Literal;
+import org.cytosm.cypher2sql.cypher.ast.expression.MapExpression;
+import org.cytosm.cypher2sql.cypher.ast.expression.PatternExpression;
+import org.cytosm.cypher2sql.cypher.ast.expression.Property;
+import org.cytosm.cypher2sql.cypher.ast.expression.PropertyKeyName;
+import org.cytosm.cypher2sql.cypher.ast.expression.Unary;
+import org.cytosm.cypher2sql.cypher.ast.expression.Variable;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.cytosm.cypher2sql.cypher.ast.*;
-import org.cytosm.cypher2sql.cypher.ast.clause.*;
-import org.cytosm.cypher2sql.cypher.ast.clause.match.pattern.*;
-import org.cytosm.cypher2sql.cypher.ast.clause.projection.*;
-import org.cytosm.cypher2sql.cypher.ast.clause.match.*;
-import org.cytosm.cypher2sql.cypher.ast.expression.*;
-import org.cytosm.cypher2sql.cypher.ast.expression.Binary.*;
-
-import java.util.*;
 
 /**
  * Helpers to write visitors and folders on the AST.
@@ -412,7 +459,9 @@ public class Walk {
 
         @Override
         public void visitList(final List<?> list) {
-            list.forEach(obj -> Walk.walk(this, obj));
+            for (Object obj : list) {
+                Walk.walk(this, obj);
+            }
         }
 
         @Override

@@ -1,23 +1,27 @@
 package org.cytosm.cypher2sql.lowering;
 
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.Optional;
+import java.util.stream.Collectors;
+
+import org.apache.commons.lang3.tuple.MutablePair;
+import org.apache.commons.lang3.tuple.Pair;
 import org.cytosm.cypher2sql.lowering.exceptions.Cypher2SqlException;
-import org.cytosm.cypher2sql.lowering.sqltree.SimpleSelect;
 import org.cytosm.cypher2sql.lowering.sqltree.ScopeSelect;
+import org.cytosm.cypher2sql.lowering.sqltree.SimpleSelect;
 import org.cytosm.cypher2sql.lowering.sqltree.WithSelect;
 import org.cytosm.cypher2sql.lowering.sqltree.from.FromItem;
 import org.cytosm.cypher2sql.lowering.sqltree.visitor.Walk;
 import org.cytosm.cypher2sql.lowering.typeck.VarDependencies;
-import org.cytosm.cypher2sql.lowering.typeck.expr.ExprVar;
-import org.cytosm.cypher2sql.lowering.typeck.var.AliasVar;
 import org.cytosm.cypher2sql.lowering.typeck.expr.Expr;
+import org.cytosm.cypher2sql.lowering.typeck.expr.ExprVar;
+import org.cytosm.cypher2sql.lowering.typeck.expr.ExprWalk;
+import org.cytosm.cypher2sql.lowering.typeck.var.AliasVar;
 import org.cytosm.cypher2sql.lowering.typeck.var.NodeOrRelVar;
 import org.cytosm.cypher2sql.lowering.typeck.var.Var;
-import org.cytosm.cypher2sql.lowering.typeck.expr.ExprWalk;
-import org.apache.commons.lang3.tuple.MutablePair;
-import org.apache.commons.lang3.tuple.Pair;
-
-import java.util.*;
-import java.util.stream.Collectors;
 
 /**
  * This class compute all FromItem. For more details look
@@ -72,7 +76,7 @@ public class ComputeFromItems {
 
             // Iterate over used variables to compute where they might come from.
             // In this loop we only check if they come from another WithSelect.
-            usedVars.forEach(var -> {
+            for (Var var : usedVars) {
                 FromItem fromItem = new FromItem();
                 fromItem.variables.add(var);
 
@@ -89,19 +93,18 @@ public class ComputeFromItems {
                         fromItems.add(fromItem);
                     }
                 }
-            });
+            }
 
             // A variable might come from different place if it is an AliasVar.
             // For this reason we process them separately.
-            usedVars.stream()
-                    .filter(x -> x instanceof NodeOrRelVar && !whereToGetTheVar.containsKey(x.uniqueName))
-                    .forEach(var -> {
-
-                FromItem fromItem = new FromItem();
-                fromItem.variables.add(var);
-                // The var will be fetched from the table source it comes from.
-                fromItems.add(fromItem);
-            });
+            for (Var var : usedVars) {
+                if (var instanceof NodeOrRelVar && !whereToGetTheVar.containsKey(var.uniqueName)) {
+                    FromItem fromItem = new FromItem();
+                    fromItem.variables.add(var);
+                    // The var will be fetched from the table source it comes from.
+                    fromItems.add(fromItem);
+                }
+            }
 
             // Now time to process AliasVar. An AliasVar might be an aggregate
             // of multiple vars for instance:
@@ -116,41 +119,43 @@ public class ComputeFromItems {
             // `WithSelect` it comes from.
             // Later on, we will only fetch it from where it comes from.
             //
-            usedVars.stream()
-                    .filter(x -> x instanceof AliasVar && !whereToGetTheVar.containsKey(x.uniqueName))
-                    .map(v -> (AliasVar) v)
-                    .forEach(aliasVar -> {
+            for (Var v : usedVars) {
+                if (v instanceof AliasVar && !whereToGetTheVar.containsKey(v.uniqueName)) {
+                    AliasVar aliasVar = (AliasVar) v;
+                    // Visit the expression and collect information about all encountered
+                    // variable. The FromItem they come from will
+                    Expr expr = aliasVar.aliased;
+                    ExprWalk.BaseVisitor visitor = new ExprWalk.BaseVisitor() {
+                        @Override
+                        public void visitVariable(ExprVar expr) {
 
-                // Visit the expression and collect information about all encountered
-                // variable. The FromItem they come from will
-                Expr expr = aliasVar.aliased;
-                ExprWalk.BaseVisitor visitor = new ExprWalk.BaseVisitor() {
-                    @Override
-                    public void visitVariable(ExprVar expr) {
+                            // Search for the FromItem that provide the variable var
+                            FromItem fromItem = new FromItem();
+                            fromItem.variables.add(expr.var);
 
-                        // Search for the FromItem that provide the variable var
-                        FromItem fromItem = new FromItem();
-                        fromItem.variables.add(expr.var);
-
-                        WithSelect source = whereToGetTheVar.get(expr.var.uniqueName);
-                        fromItem.source = source;
-                        Optional<FromItem> existingFromItem = fromItems.stream()
+                            WithSelect source = whereToGetTheVar.get(expr.var.uniqueName);
+                            fromItem.source = source;
+                            Optional<FromItem> existingFromItem = fromItems.stream()
                                 .filter(x -> x.source == source)
                                 .findFirst();
-                        if (existingFromItem.isPresent()) {
-                            existingFromItem.get().variables.add(expr.var);
-                        } else {
-                            fromItems.add(fromItem);
+                            if (existingFromItem.isPresent()) {
+                                existingFromItem.get().variables.add(expr.var);
+                            }
+                            else {
+                                fromItems.add(fromItem);
+                            }
                         }
-                    }
-                };
+                    };
 
-                ExprWalk.walk(visitor, expr);
-            });
+                    ExprWalk.walk(visitor, expr);
+                }
+            }
 
             // Last step: Mark all variable as coming from
             // this WithSelect now:
-            usedVars.forEach(var -> whereToGetTheVar.put(var.uniqueName, withSelect));
+            for (Var var : usedVars) {
+                whereToGetTheVar.put(var.uniqueName, withSelect);
+            }
 
             // All FromItems are added to the Select fromItem.
             // Note: Some of them will probably be moved later
@@ -183,19 +188,19 @@ public class ComputeFromItems {
             }
 
             // Collect only the roots
-            list.stream().filter(x -> !x.getValue()).forEach(x -> {
-
-                // The FromItem for this select
-                // can only provide information about the variable
-                // that it is using.
-                // (Does this contains indirect variable use?)
-                // If not -> then there is a bug in VarDependencies.
-                FromItem fromItem = new FromItem();
-                fromItem.source = x.getKey();
-                fromItem.variables = vars.getUsedAndIndirectUsedVars(x.getKey().varId).stream()
-                        .collect(Collectors.toList());
-                scopeSelect.ret.fromItem.add(fromItem);
-            });
+            for (Pair<WithSelect, Boolean> x : list) {
+                if (!x.getValue()) {
+                    // The FromItem for this select
+                    // can only provide information about the variable
+                    // that it is using.
+                    // (Does this contains indirect variable use?)
+                    // If not -> then there is a bug in VarDependencies.
+                    FromItem fromItem = new FromItem();
+                    fromItem.source = x.getKey();
+                    fromItem.variables = new ArrayList<>(vars.getUsedAndIndirectUsedVars(x.getKey().varId));
+                    scopeSelect.ret.fromItem.add(fromItem);
+                }
+            }
         }
     }
 }
