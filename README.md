@@ -19,4 +19,13 @@ This is a fork of [Cytosm](https://github.com/cytosm/cytosm) with new features a
 - Update to the newest library versions
 - Misc fixes and improvements
 
+## Usage
+Include the following in your pom.xml:
+```xml
+<dependency>
+  <groupId>io.github.stephen-allen.cytosm</groupId>
+  <artifactId>cypher2sql</artifactId>
+  <version>1.1</version>
+</dependency>
+```
 
