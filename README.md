@@ -1,7 +1,6 @@
 # CYpher TO Sql Mapper (Cytosm)
 
-![GitHub Workflow Status](https://github.com/Stephen-Allen/cytosm/actions/workflows/test.yml/badge.svg)
-
+[![Build and Test](https://github.com/Stephen-Allen/cytosm/actions/workflows/test.yml/badge.svg)](https://github.com/Stephen-Allen/cytosm/actions/workflows/test.yml)
 
 This is a fork of [Cytosm](https://github.com/cytosm/cytosm) with new features and bug fixes.
 
