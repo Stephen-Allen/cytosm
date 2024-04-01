@@ -134,8 +134,15 @@ public class PopulateJoins {
                 Var leftNode = rel.leftNode;
                 Var rightNode = rel.rightNode;
 
-                List<ImplementationEdge> edges = rel.labels.stream()
-                        .flatMap(l -> gTopInterface.getImplementationEdgeByType(l).stream())
+                final List<ImplementationEdge> possibilities;
+                if (rel.labels.isEmpty()) {
+                    possibilities = gTopInterface.getImplementationEdgeByType(null);
+                }
+                else {
+                    possibilities = rel.labels.stream().flatMap(l -> gTopInterface.getImplementationEdgeByType(l).stream()).collect(Collectors.toList());
+                }
+
+                List<ImplementationEdge> edges = possibilities.stream()
                         .filter(edge -> {
                             TraversalHop hop = edge.getPaths().get(0).getTraversalHops().get(0);
                             return (hop.getSourceTableName().equals(leftNodeOriginTableName) &&
@@ -145,10 +152,10 @@ public class PopulateJoins {
                         })
                         .collect(Collectors.toList());
 
-
                 if (edges.size() > 1) {
                     throw new BugFound("More than one source!! This is a bug.");
-                } else if (edges.isEmpty()) {
+                }
+                else if (edges.isEmpty()) {
                     throw new BugFound("No edge found between: '" + leftNodeOriginTableName + "' and '"
                         + rightNodeOriginTableName + "' for label(s) [" +
                             rel.labels.stream().map(l -> "'" + l + "'").collect(Collectors.joining(", "))
@@ -192,7 +199,7 @@ public class PopulateJoins {
                             leftNode, leftNodeOriginTableName,
                             rightNode, rightNodeOriginTableName);
 
-                        // FIXME: If the direction is BOTH and the source table equals the destination table then we should have a union
+                        // FIXME: If the direction is BOTH and the labels are the same (which means that the source table equals the destination table) then we should have a union
                         if (destination == source) {
                             destination = (destination == leftNode) ? rightNode : leftNode;
                         }
