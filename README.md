@@ -7,6 +7,8 @@ This is a fork of [Cytosm](https://github.com/cytosm/cytosm) with new features a
 ## Added Features
 - Add Regex, StartsWith, EndWith, and Contains operators
 - Add toLower() and toUpper() functions
+- Handle directional edges when constructing joins
+- Support edges with no label
 - A release build to Maven POM
 - Refactor build system and use Maven Wrapper
 - Replace log4j with slf4j
