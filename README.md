@@ -27,7 +27,7 @@ Include the following in your pom.xml:
 <dependency>
   <groupId>io.github.stephen-allen.cytosm</groupId>
   <artifactId>cypher2sql</artifactId>
-  <version>1.1</version>
+  <version>1.2</version>
 </dependency>
 ```
 The main entry points to use the library are the static methods in the [`PassAvailables`](cypher2sql/src/main/java/org/cytosm/cypher2sql/PassAvailables.java) class.
