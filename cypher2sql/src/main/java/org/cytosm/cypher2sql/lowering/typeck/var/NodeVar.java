@@ -1,6 +1,6 @@
 package org.cytosm.cypher2sql.lowering.typeck.var;
 
-import java.util.HashSet;
+import java.util.LinkedHashSet;
 import java.util.Set;
 
 import org.cytosm.cypher2sql.cypher.ast.clause.match.pattern.NodePattern;
@@ -28,7 +28,7 @@ public class NodeVar extends NodeOrRelVar {
      * This represent the future properties
      * that will be required to be transmitted between selects.
      */
-    public Set<String> propertiesRequired = new HashSet<>();
+    public Set<String> propertiesRequired = new LinkedHashSet<>();
 
     public AType type() {
         return new NodeType();
