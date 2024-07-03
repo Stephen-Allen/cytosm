@@ -73,7 +73,7 @@ public class Walk {
     public interface ObjectVisitor {
         void visitOptional(final Optional<?> some);
         void visitList(final List<?> list);
-        void visitPair(final Pair<?, ?> pair);
+        void visitPair(final Pair<?, ?> scalaTuple2);
     }
 
     public interface LiteralVisitor extends ObjectVisitor {
