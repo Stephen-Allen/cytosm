@@ -18,7 +18,10 @@ This is a fork of [Cytosm](https://github.com/cytosm/cytosm) with new features a
 - Escape string literals in SQL output
 - Clean up and simplify the GTopInterface class
 - Keep track of the labels on relationship variables during SQL generation
-- Update to the newest library versions
+- Update Java 8 to 17 (necessary for ANTLR 4.10+)
+- Refactor and remove unused/underused dependencies
+- Update JUnit 4 to 5
+- Update to the latest maven plugin and 3rd party library versions
 - Misc fixes and improvements
 
 ## Usage
