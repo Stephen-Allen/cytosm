@@ -1,13 +1,13 @@
 package org.cytosm.cypher2sql.lowering.rendering;
 
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
-import static org.junit.Assert.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertEquals;
 
-public class RenderingHelperTest {
+class RenderingHelperTest {
 
     @Test
-    public void itShouldEscapeForSqlLiteral() {
+    void itShouldEscapeForSqlLiteral() {
         final RenderingHelper helper = new RenderingHelper();
         assertEquals(" spaces do nothing ", helper.escapeForSqlLiteral(" spaces do nothing "));
         assertEquals("should escape '' marks", helper.escapeForSqlLiteral("should escape ' marks"));
@@ -17,7 +17,7 @@ public class RenderingHelperTest {
     }
 
     @Test
-    public void itShouldEscapeForSqlLike() {
+    void itShouldEscapeForSqlLike() {
         final RenderingHelper helper = new RenderingHelper();
         assertEquals("\\_\\_\\_", helper.escapeForSqlLike("___"));
         assertEquals("\\%\\%\\%", helper.escapeForSqlLike("%%%"));

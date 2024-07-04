@@ -1,34 +1,34 @@
 package org.cytosm.cypher2sql.lowering.typeck;
 
+import java.util.ArrayList;
+import java.util.List;
+
 import org.cytosm.cypher2sql.PassAvailables;
 import org.cytosm.cypher2sql.cypher.ast.SingleQuery;
 import org.cytosm.cypher2sql.cypher.ast.Statement;
-import org.cytosm.cypher2sql.lowering.typeck.VarDependencies;
 import org.cytosm.cypher2sql.lowering.typeck.var.Var;
-import org.junit.Assert;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
-import java.util.List;
-import java.util.stream.Collectors;
+import static org.junit.jupiter.api.Assertions.assertEquals;
 
 /**
  */
-public class NamingTests extends BaseVarTests {
+class NamingTests extends BaseVarTests {
 
     @Test
-    public void testGeneratedNames() throws Exception {
+    void generatedNames() {
         String cypher = "MATCH p=(a)-[r]-(b) WITH a AS foo RETURN foo.bar";
         Statement st = PassAvailables.parseCypher(cypher);
         SingleQuery sq = (SingleQuery) st.query.part;
         VarDependencies dependencies = new VarDependencies(st);
 
-        List<Var> vars = dependencies.getAllVariables().stream().collect(Collectors.toList());
+        List<Var> vars = new ArrayList<>(dependencies.getAllVariables());
 
-        Assert.assertEquals(5, vars.size());
-        Assert.assertEquals("__cytosm6$7", getByName(vars, "p").uniqueName);
-        Assert.assertEquals("__cytosm9$10", getByName(vars, "a").uniqueName);
-        Assert.assertEquals("__cytosm13$14", getByName(vars, "r").uniqueName);
-        Assert.assertEquals("__cytosm17$18", getByName(vars, "b").uniqueName);
-        Assert.assertEquals("__cytosm30$33", getByName(vars, "foo").uniqueName);
+        assertEquals(5, vars.size());
+        assertEquals("__cytosm6$7", getByName(vars, "p").uniqueName);
+        assertEquals("__cytosm9$10", getByName(vars, "a").uniqueName);
+        assertEquals("__cytosm13$14", getByName(vars, "r").uniqueName);
+        assertEquals("__cytosm17$18", getByName(vars, "b").uniqueName);
+        assertEquals("__cytosm30$33", getByName(vars, "foo").uniqueName);
     }
 }

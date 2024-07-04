@@ -2,17 +2,18 @@ package org.cytosm.cypher2sql.lowering;
 
 import org.cytosm.cypher2sql.PassAvailables;
 import org.cytosm.cypher2sql.lowering.sqltree.ScopeSelect;
-import org.junit.Assert;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
+
+import static org.junit.jupiter.api.Assertions.assertEquals;
 
 /**
  */
-public class UnwrapAliasVarTests extends BaseLDBCTests {
+class UnwrapAliasVarTests extends BaseLDBCTests {
 
     @Test
-    public void testAliasVarIsKeptOnReturn() throws Exception {
+    void aliasVarIsKeptOnReturn() throws Exception {
         String cypher = "MATCH (a:Person) RETURN a.firstName AS a";
         ScopeSelect tree = PassAvailables.cypher2sqlOnExpandedPaths(getGTopInterface(), cypher);
-        Assert.assertEquals(1, tree.ret.exportedItems.size());
+        assertEquals(1, tree.ret.exportedItems.size());
     }
 }

@@ -9,7 +9,7 @@ import org.cytosm.common.gtop.RelationalGTopInterface;
 
 /**
  */
-public class BaseLDBCTests {
+public abstract class BaseLDBCTests {
 
     protected GTopInterface getGTopInterface() throws IOException {
         Path path = Path.of("src", "test", "resources", "ldbc.gtop");

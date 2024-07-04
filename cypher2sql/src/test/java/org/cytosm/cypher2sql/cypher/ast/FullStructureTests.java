@@ -1,7 +1,8 @@
 package org.cytosm.cypher2sql.cypher.ast;
 
-import org.cytosm.cypher2sql.cypher.ast.SingleQuery;
-import org.cytosm.cypher2sql.cypher.ast.Statement;
+import java.util.List;
+import java.util.Optional;
+
 import org.cytosm.cypher2sql.cypher.ast.clause.Clause;
 import org.cytosm.cypher2sql.cypher.ast.clause.match.Match;
 import org.cytosm.cypher2sql.cypher.ast.clause.match.pattern.NodePattern;
@@ -10,124 +11,131 @@ import org.cytosm.cypher2sql.cypher.ast.clause.match.pattern.RelationshipPattern
 import org.cytosm.cypher2sql.cypher.ast.clause.projection.Return;
 import org.cytosm.cypher2sql.cypher.ast.clause.projection.ReturnItem;
 import org.cytosm.cypher2sql.cypher.ast.clause.projection.With;
-import org.cytosm.cypher2sql.cypher.ast.expression.*;
+import org.cytosm.cypher2sql.cypher.ast.expression.Binary;
+import org.cytosm.cypher2sql.cypher.ast.expression.ListExpression;
+import org.cytosm.cypher2sql.cypher.ast.expression.Literal;
+import org.cytosm.cypher2sql.cypher.ast.expression.MapExpression;
+import org.cytosm.cypher2sql.cypher.ast.expression.Property;
+import org.cytosm.cypher2sql.cypher.ast.expression.Variable;
 import org.cytosm.cypher2sql.cypher.parser.ASTBuilder;
-import org.junit.Assert;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
-import java.util.List;
-import java.util.Optional;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertInstanceOf;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 /**
  * Those tests take a long time to write but
  * they check the entire structure to make sure everything is correct.
  */
-public class FullStructureTests {
+class FullStructureTests {
 
     // This test would be hard to debug but it test all the features
     // together and so might be more likely to catch any bug introduced.
     @Test
-    public void testFullExampleWithoutRelationships() {
+    void fullExampleWithoutRelationships() {
         String cypher = "MATCH (a:Person {id: 'test'}) WHERE a.x > (12 + 4 / 1)\n" +
                 "WITH a AS foobar RETURN 234, foobar.test ORDER BY {} SKIP 23 LIMIT 42";
         Statement st = ASTBuilder.parse(cypher);
         List<Clause> clauses = ((SingleQuery) st.query.part).clauses;
-        Assert.assertEquals(3, clauses.size());
-        Assert.assertTrue(clauses.get(0) instanceof Match);
-        Assert.assertTrue(clauses.get(1) instanceof With);
-        Assert.assertTrue(clauses.get(2) instanceof Return);
+        assertEquals(3, clauses.size());
+        assertInstanceOf(Match.class, clauses.get(0));
+        assertInstanceOf(With.class, clauses.get(1));
+        assertInstanceOf(Return.class, clauses.get(2));
 
         Match m = (Match) clauses.get(0);
         With w = (With) clauses.get(1);
         Return r = (Return) clauses.get(2);
 
         // Match
-        Assert.assertEquals(m.optional, false);
-        Assert.assertNotNull(m.pattern);
-        Assert.assertTrue(m.where.isPresent());
+        assertFalse(m.optional);
+        assertNotNull(m.pattern);
+        assertTrue(m.where.isPresent());
 
-        Assert.assertEquals(m.pattern.patternParts.size(), 1);
-        Assert.assertTrue(m.pattern.patternParts.get(0).element instanceof NodePattern);
+        assertEquals(1, m.pattern.patternParts.size());
+        assertInstanceOf(NodePattern.class, m.pattern.patternParts.get(0).element);
         NodePattern np = (NodePattern) m.pattern.patternParts.get(0).element;
-        Assert.assertEquals(np.labels.size(), 1);
-        Assert.assertEquals(np.labels.get(0).name, "Person");
-        Assert.assertTrue(np.variable.isPresent());
-        Assert.assertEquals(np.variable.get().name, "a");
+        assertEquals(1, np.labels.size());
+        assertEquals("Person", np.labels.get(0).name);
+        assertTrue(np.variable.isPresent());
+        assertEquals("a", np.variable.get().name);
 
-        Assert.assertTrue(np.properties.isPresent());
+        assertTrue(np.properties.isPresent());
         MapExpression props = np.properties.get();
 
-        Assert.assertEquals(props.props.get(0).getKey().name, "id");
-        Assert.assertEquals(((Literal.StringLiteral) props.props.get(0).getValue()).value, "test");
+        assertEquals("id", props.props.get(0).getKey().name);
+        assertEquals("test", ((Literal.StringLiteral) props.props.get(0).getValue()).value);
 
         Binary.GreaterThan whereExpr = (Binary.GreaterThan) m.where.get().expression;
         Property lhs = (Property)  whereExpr.lhs;
-        Assert.assertEquals(lhs.propertyKey.name, "x");
-        Assert.assertEquals(((Variable) lhs.map).name, "a");
+        assertEquals("x", lhs.propertyKey.name);
+        assertEquals("a", ((Variable) lhs.map).name);
 
         Binary.Add rhs = (Binary.Add) whereExpr.rhs;
-        Assert.assertEquals(((Literal.Integer) rhs.lhs).value, 12L);
-        Assert.assertEquals(((Literal.Integer) ((Binary.Divide) rhs.rhs).lhs).value, 4L);
-        Assert.assertEquals(((Literal.Integer) ((Binary.Divide) rhs.rhs).rhs).value, 1L);
+        assertEquals(12L, ((Literal.Integer) rhs.lhs).value);
+        assertEquals(4L, ((Literal.Integer) ((Binary.Divide) rhs.rhs).lhs).value);
+        assertEquals(1L, ((Literal.Integer) ((Binary.Divide) rhs.rhs).rhs).value);
 
         // With
-        Assert.assertEquals(w.returnItems.size(), 1);
-        Assert.assertTrue(w.returnItems.get(0) instanceof ReturnItem.Aliased);
-        Assert.assertEquals(((ReturnItem.Aliased) w.returnItems.get(0)).alias.name, "foobar");
-        Assert.assertEquals(((Variable) w.returnItems.get(0).expression).name, "a");
+        assertEquals(1, w.returnItems.size());
+        assertInstanceOf(ReturnItem.Aliased.class, w.returnItems.get(0));
+        assertEquals("foobar", ((ReturnItem.Aliased) w.returnItems.get(0)).alias.name);
+        assertEquals("a", ((Variable) w.returnItems.get(0).expression).name);
 
         // Return
-        Assert.assertEquals(r.returnItems.size(), 2);
-        Assert.assertTrue(r.returnItems.get(0) instanceof ReturnItem.Unaliased);
-        Assert.assertTrue(r.returnItems.get(1) instanceof ReturnItem.Unaliased);
-        Assert.assertEquals(((ReturnItem.Unaliased) r.returnItems.get(1)).name, "foobar.test");
-        Assert.assertTrue(r.orderBy.isPresent());
-        Assert.assertEquals(r.orderBy.get().sortItems.size(), 1);
-        Assert.assertTrue(r.skip.isPresent());
-        Assert.assertEquals(((Literal.Integer) r.skip.get().expression).value, 23);
-        Assert.assertTrue(r.limit.isPresent());
-        Assert.assertEquals(((Literal.Integer) r.limit.get().expression).value, 42);
+        assertEquals(2, r.returnItems.size());
+        assertInstanceOf(ReturnItem.Unaliased.class, r.returnItems.get(0));
+        assertInstanceOf(ReturnItem.Unaliased.class, r.returnItems.get(1));
+        assertEquals("foobar.test", ((ReturnItem.Unaliased) r.returnItems.get(1)).name);
+        assertTrue(r.orderBy.isPresent());
+        assertEquals(1, r.orderBy.get().sortItems.size());
+        assertTrue(r.skip.isPresent());
+        assertEquals(23, ((Literal.Integer) r.skip.get().expression).value);
+        assertTrue(r.limit.isPresent());
+        assertEquals(42, ((Literal.Integer) r.limit.get().expression).value);
     }
 
     @Test
-    public void testRelationshipChains1() {
+    void relationshipChains1() {
         String cypher = "MATCH (a)-[r:TEST]-(c)";
         Statement st = ASTBuilder.parse(cypher);
         List<Clause> clauses = ((SingleQuery) st.query.part).clauses;
         Match m = (Match) clauses.get(0);
 
-        Assert.assertTrue(m.pattern.patternParts.get(0).element instanceof RelationshipChain);
+        assertInstanceOf(RelationshipChain.class, m.pattern.patternParts.get(0).element);
 
         RelationshipChain rc = (RelationshipChain) m.pattern.patternParts.get(0).element;
-        Assert.assertTrue(rc.element instanceof NodePattern);
-        Assert.assertTrue(((NodePattern) rc.element).variable.isPresent());
-        Assert.assertTrue(rc.rightNode.variable.isPresent());
-        Assert.assertEquals(((NodePattern) rc.element).variable.get().name, "a");
-        Assert.assertEquals(rc.rightNode.variable.get().name, "c");
-        Assert.assertEquals(rc.relationship.direction, RelationshipPattern.SemanticDirection.BOTH);
-        Assert.assertEquals(rc.relationship.length, Optional.empty());
-        Assert.assertEquals(rc.relationship.types.size(), 1);
-        Assert.assertEquals(rc.relationship.types.get(0).name, "TEST");
+        assertInstanceOf(NodePattern.class, rc.element);
+        assertTrue(((NodePattern) rc.element).variable.isPresent());
+        assertTrue(rc.rightNode.variable.isPresent());
+        assertEquals("a", ((NodePattern) rc.element).variable.get().name);
+        assertEquals("c", rc.rightNode.variable.get().name);
+        assertEquals(RelationshipPattern.SemanticDirection.BOTH, rc.relationship.direction);
+        assertEquals(rc.relationship.length, Optional.empty());
+        assertEquals(1, rc.relationship.types.size());
+        assertEquals("TEST", rc.relationship.types.get(0).name);
     }
 
     @Test
-    public void testListExpressions() {
+    void listExpressions() {
         String cypher = "MATCH (a) WHERE a.lastName IN ['foo','bar'] RETURN a.firstName";
         Statement st = ASTBuilder.parse(cypher);
         List<Clause> clauses = ((SingleQuery) st.query.part).clauses;
         Match m = (Match) clauses.get(0);
 
-        Assert.assertTrue(m.where.isPresent());
-        Assert.assertTrue(m.where.get().expression instanceof Binary.In);
+        assertTrue(m.where.isPresent());
+        assertInstanceOf(Binary.In.class, m.where.get().expression);
 
         Binary.In in = (Binary.In) m.where.get().expression;
 
-        Assert.assertTrue(in.rhs instanceof ListExpression);
+        assertInstanceOf(ListExpression.class, in.rhs);
 
         ListExpression list = (ListExpression) in.rhs;
 
-        Assert.assertEquals(2, list.exprs.size());
-        Assert.assertEquals("foo", ((Literal.StringLiteral) list.exprs.get(0)).value);
-        Assert.assertEquals("bar", ((Literal.StringLiteral) list.exprs.get(1)).value);
+        assertEquals(2, list.exprs.size());
+        assertEquals("foo", ((Literal.StringLiteral) list.exprs.get(0)).value);
+        assertEquals("bar", ((Literal.StringLiteral) list.exprs.get(1)).value);
     }
 }

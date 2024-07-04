@@ -7,14 +7,14 @@ import java.nio.file.Path;
 import org.cytosm.common.gtop.GTopInterface;
 import org.cytosm.common.gtop.RelationalGTopInterface;
 import org.cytosm.cypher2sql.PassAvailables;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
 /**
  * Put here any tests that stress a particular feature or
  * that should work unconditionally.
  *
  */
-public class StressTests {
+class StressTests {
 
     private GTopInterface getGTopInterface() throws IOException {
         Path path = Path.of("src", "test", "resources", "northwind.gtop");
@@ -24,7 +24,7 @@ public class StressTests {
 
 
     @Test
-    public void testMatchWithWithWithWithWith() throws Exception {
+    void matchWithWithWithWithWith() throws Exception {
         GTopInterface gTopInterface = getGTopInterface();
         String query =
                 "MATCH (person:Employees) " +
@@ -38,7 +38,7 @@ public class StressTests {
     }
 
     @Test
-    public void testMatchWithMatchWithWithWith() throws Exception {
+    void matchWithMatchWithWithWith() throws Exception {
         GTopInterface gTopInterface = getGTopInterface();
         String query =
                 "MATCH (person:Employees) " +

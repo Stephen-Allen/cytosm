@@ -1,23 +1,26 @@
 package org.cytosm.cypher2sql.lowering;
 
 import org.cytosm.cypher2sql.PassAvailables;
+import org.cytosm.cypher2sql.cypher.ast.Statement;
 import org.cytosm.cypher2sql.lowering.exceptions.Cypher2SqlException;
-import org.cytosm.cypher2sql.lowering.sqltree.SimpleSelect;
 import org.cytosm.cypher2sql.lowering.sqltree.ScopeSelect;
+import org.cytosm.cypher2sql.lowering.sqltree.SimpleSelect;
 import org.cytosm.cypher2sql.lowering.typeck.VarDependencies;
 import org.cytosm.cypher2sql.lowering.typeck.constexpr.ConstVal;
 import org.cytosm.cypher2sql.lowering.typeck.expr.ExprTree;
-import org.junit.Assert;
-import org.junit.Ignore;
-import org.junit.Test;
-import org.cytosm.cypher2sql.cypher.ast.Statement;
+import org.junit.jupiter.api.Disabled;
+import org.junit.jupiter.api.Test;
+
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertNull;
 
 /**
  */
-public class MoveRestrictionTests {
+class MoveRestrictionTests {
 
     @Test
-    public void testMovePredicateAsWhereClauseShouldWork() throws Cypher2SqlException {
+    void movePredicateAsWhereClauseShouldWork() throws Cypher2SqlException {
         String cypher = "MATCH (a:Person {id: 0}) RETURN a.firstName";
         Statement query = PassAvailables.parseCypher(cypher);
         VarDependencies vars = new VarDependencies(query);
@@ -27,14 +30,14 @@ public class MoveRestrictionTests {
 
         // Assertions:
         SimpleSelect s = (SimpleSelect) tree.withQueries.get(0).subquery;
-        Assert.assertNotNull(s.whereCondition);
+        assertNotNull(s.whereCondition);
         ExprTree.Eq eq = (ExprTree.Eq) s.whereCondition;
-        Assert.assertEquals(((ConstVal.LongVal) eq.rhs).value, 0);
-        Assert.assertEquals(((ExprTree.PropertyAccess) eq.lhs).propertyAccessed, "id");
+        assertEquals(0, ((ConstVal.LongVal) eq.rhs).value);
+        assertEquals("id", ((ExprTree.PropertyAccess) eq.lhs).propertyAccessed);
     }
 
     @Test
-    public void testMoveTwoPredicateAsWhereClauseShouldWork() throws Cypher2SqlException {
+    void moveTwoPredicateAsWhereClauseShouldWork() throws Cypher2SqlException {
         String cypher = "MATCH (a:Person {id: 0})-[:KNOWS]-(b:Person {foo: 30})\n" +
                 "RETURN a.firstName";
         Statement query = PassAvailables.parseCypher(cypher);
@@ -45,18 +48,18 @@ public class MoveRestrictionTests {
 
         // Assertions:
         SimpleSelect s = (SimpleSelect) tree.withQueries.get(0).subquery;
-        Assert.assertNotNull(s.whereCondition);
+        assertNotNull(s.whereCondition);
         ExprTree.And and = (ExprTree.And) s.whereCondition;
         ExprTree.Eq eq1 = (ExprTree.Eq) and.lhs;
         ExprTree.Eq eq2 = (ExprTree.Eq) and.rhs;
-        Assert.assertEquals(((ConstVal.LongVal) eq1.rhs).value, 0);
-        Assert.assertEquals(((ExprTree.PropertyAccess) eq1.lhs).propertyAccessed, "id");
-        Assert.assertEquals(((ConstVal.LongVal) eq2.rhs).value, 30);
-        Assert.assertEquals(((ExprTree.PropertyAccess) eq2.lhs).propertyAccessed, "foo");
+        assertEquals(0, ((ConstVal.LongVal) eq1.rhs).value);
+        assertEquals("id", ((ExprTree.PropertyAccess) eq1.lhs).propertyAccessed);
+        assertEquals(30, ((ConstVal.LongVal) eq2.rhs).value);
+        assertEquals("foo", ((ExprTree.PropertyAccess) eq2.lhs).propertyAccessed);
     }
 
     @Test
-    public void testMovePredicateEverywhere() throws Cypher2SqlException {
+    void movePredicateEverywhere() throws Cypher2SqlException {
         String cypher = "MATCH (a:Person {id: 0})-[:KNOWS]-(b:Person)\n" +
                 "MATCH (b)-[:KNOWS]-(c:Person {foo:23}) RETURN a.firstName";
         Statement query = PassAvailables.parseCypher(cypher);
@@ -67,19 +70,19 @@ public class MoveRestrictionTests {
 
         // Assertions:
         SimpleSelect s = (SimpleSelect) tree.withQueries.get(0).subquery;
-        Assert.assertNotNull(s.whereCondition);
+        assertNotNull(s.whereCondition);
         ExprTree.Eq eq = (ExprTree.Eq) s.whereCondition;
-        Assert.assertEquals(((ConstVal.LongVal) eq.rhs).value, 0);
-        Assert.assertEquals(((ExprTree.PropertyAccess) eq.lhs).propertyAccessed, "id");
+        assertEquals(0, ((ConstVal.LongVal) eq.rhs).value);
+        assertEquals("id", ((ExprTree.PropertyAccess) eq.lhs).propertyAccessed);
         SimpleSelect s2 = (SimpleSelect) tree.withQueries.get(1).subquery;
-        Assert.assertNotNull(s2.whereCondition);
+        assertNotNull(s2.whereCondition);
         ExprTree.Eq eq2 = (ExprTree.Eq) s2.whereCondition;
-        Assert.assertEquals(((ConstVal.LongVal) eq2.rhs).value, 23);
-        Assert.assertEquals(((ExprTree.PropertyAccess) eq2.lhs).propertyAccessed, "foo");
+        assertEquals(23, ((ConstVal.LongVal) eq2.rhs).value);
+        assertEquals("foo", ((ExprTree.PropertyAccess) eq2.lhs).propertyAccessed);
     }
 
     @Test
-    public void testDontAssertTwice() throws Cypher2SqlException {
+    void dontAssertTwice() throws Cypher2SqlException {
         String cypher = "MATCH (a:Person {id: 0})-[:KNOWS]-(b:Person)\n" +
                 "MATCH (a)-[:KNOWS]-(c:Person) " +
                 "RETURN a.firstName";
@@ -91,17 +94,17 @@ public class MoveRestrictionTests {
 
         // Assertions:
         SimpleSelect s = (SimpleSelect) tree.withQueries.get(0).subquery;
-        Assert.assertNotNull(s.whereCondition);
+        assertNotNull(s.whereCondition);
         ExprTree.Eq eq = (ExprTree.Eq) s.whereCondition;
-        Assert.assertEquals(((ConstVal.LongVal) eq.rhs).value, 0);
-        Assert.assertEquals(((ExprTree.PropertyAccess) eq.lhs).propertyAccessed, "id");
+        assertEquals(0, ((ConstVal.LongVal) eq.rhs).value);
+        assertEquals("id", ((ExprTree.PropertyAccess) eq.lhs).propertyAccessed);
         SimpleSelect s2 = (SimpleSelect) tree.withQueries.get(1).subquery;
-        Assert.assertNull(s2.whereCondition);
+        assertNull(s2.whereCondition);
     }
 
     @Test
-    @Ignore
-    public void testMoveWorksAcrossNonOptionalMatches() throws Cypher2SqlException {
+    @Disabled
+    void moveWorksAcrossNonOptionalMatches() throws Cypher2SqlException {
         String cypher = "MATCH (a:Person {firstName: 'Richard'}) " +
                 "MATCH (a {id:1099511636050}) " +
                 "RETURN a.firstName";
@@ -113,21 +116,21 @@ public class MoveRestrictionTests {
 
         // Assertions
         SimpleSelect s = (SimpleSelect) tree.withQueries.get(0).subquery;
-        Assert.assertNotNull(s.whereCondition);
+        assertNotNull(s.whereCondition);
         ExprTree.And and = (ExprTree.And) s.whereCondition;
         ExprTree.Eq eq1 = (ExprTree.Eq) and.lhs;
         ExprTree.Eq eq2 = (ExprTree.Eq) and.rhs;
-        Assert.assertEquals(((ConstVal.StrVal) eq1.rhs).value, "Richard");
-        Assert.assertEquals(((ExprTree.PropertyAccess) eq1.lhs).propertyAccessed, "firstName");
-        Assert.assertEquals(((ConstVal.LongVal) eq2.rhs).value, 1099511636050L);
-        Assert.assertEquals(((ExprTree.PropertyAccess) eq2.lhs).propertyAccessed, "id");
+        assertEquals("Richard", ((ConstVal.StrVal) eq1.rhs).value);
+        assertEquals("firstName", ((ExprTree.PropertyAccess) eq1.lhs).propertyAccessed);
+        assertEquals(1099511636050L, ((ConstVal.LongVal) eq2.rhs).value);
+        assertEquals("id", ((ExprTree.PropertyAccess) eq2.lhs).propertyAccessed);
         SimpleSelect s2 = (SimpleSelect) tree.withQueries.get(1).subquery;
-        Assert.assertNull(s2.whereCondition);
+        assertNull(s2.whereCondition);
     }
 
     @Test
-    @Ignore
-    public void testMoveDoesNotBreakOptionalMatches() throws Cypher2SqlException {
+    @Disabled
+    void moveDoesNotBreakOptionalMatches() throws Cypher2SqlException {
         String cypher = "MATCH (a:Person {firstName: 'Richard'}) " +
                 "OPTIONAL MATCH (a {id:1099511636050}) " +
                 "RETURN a.firstName";
@@ -139,15 +142,15 @@ public class MoveRestrictionTests {
 
         // Assertions
         SimpleSelect s = (SimpleSelect) tree.withQueries.get(0).subquery;
-        Assert.assertNotNull(s.whereCondition);
+        assertNotNull(s.whereCondition);
         ExprTree.Eq eq1 = (ExprTree.Eq) s.whereCondition;
-        Assert.assertEquals(((ConstVal.StrVal) eq1.rhs).value, "Richard");
-        Assert.assertEquals(((ExprTree.PropertyAccess) eq1.lhs).propertyAccessed, "firstName");
+        assertEquals("Richard", ((ConstVal.StrVal) eq1.rhs).value);
+        assertEquals("firstName", ((ExprTree.PropertyAccess) eq1.lhs).propertyAccessed);
 
         SimpleSelect s2 = (SimpleSelect) tree.withQueries.get(1).subquery;
-        Assert.assertNotNull(s2.whereCondition);
+        assertNotNull(s2.whereCondition);
         ExprTree.Eq eq2 = (ExprTree.Eq) s2.whereCondition;
-        Assert.assertEquals(((ConstVal.LongVal) eq2.rhs).value, 1099511636050L);
-        Assert.assertEquals(((ExprTree.PropertyAccess) eq2.lhs).propertyAccessed, "id");
+        assertEquals(1099511636050L, ((ConstVal.LongVal) eq2.rhs).value);
+        assertEquals("id", ((ExprTree.PropertyAccess) eq2.lhs).propertyAccessed);
     }
 }

@@ -2,7 +2,6 @@ package org.cytosm.common;
 
 import java.io.IOException;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -25,13 +24,16 @@ import org.cytosm.common.gtop.implementation.relational.RestrictionClauses;
 import org.cytosm.common.gtop.implementation.relational.TraversalHop;
 import org.cytosm.common.gtop.implementation.relational.TraversalPath;
 import org.cytosm.common.gtop.io.SerializationInterface;
-import org.junit.Assert;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
-public class GtopTest {
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotEquals;
+import static org.junit.jupiter.api.Assertions.assertTrue;
+
+class GtopTest {
 
     @Test
-    public void emptyGTopSerializationProcess() throws IOException {
+    void emptyGTopSerializationProcess() throws IOException {
 
         // produce abstraction section;
         List<AbstractionNode> aNodes = new ArrayList<>();
@@ -56,21 +58,21 @@ public class GtopTest {
         GTop gTop2 = mapper.readValue(jsonInString, GTop.class);
 
         // assert they are the same
-        Assert.assertEquals(gTop.getVersion(), gTop2.getVersion());
-        Assert.assertEquals(gTop.getAbstractionLevel(), gTop2.getAbstractionLevel());
-        Assert.assertEquals(gTop.getImplementationLevel(), gTop2.getImplementationLevel());
+        assertEquals(gTop.getVersion(), gTop2.getVersion());
+        assertEquals(gTop.getAbstractionLevel(), gTop2.getAbstractionLevel());
+        assertEquals(gTop.getImplementationLevel(), gTop2.getImplementationLevel());
     }
 
     @Test
-    public void filledGtop() throws IOException {
+    void filledGtop() throws IOException {
         // produce abstraction section;
         List<AbstractionNode> aNodes = new ArrayList<>();
         List<AbstractionEdge> aEdges = new ArrayList<>();
-        AbstractionNode aNode1 = new AbstractionNode(Arrays.asList("node1"), Arrays.asList("nodeAttribute1"));
-        AbstractionNode aNode2 = new AbstractionNode(Arrays.asList("node2"), Arrays.asList("nodeAttribute2"));
+        AbstractionNode aNode1 = new AbstractionNode(List.of("node1"), List.of("nodeAttribute1"));
+        AbstractionNode aNode2 = new AbstractionNode(List.of("node2"), List.of("nodeAttribute2"));
         AbstractionEdge aEdge =
-                new AbstractionEdge(Arrays.asList("edge1"), Arrays.asList("edgeAttribute1"), Arrays.asList("node1"),
-                        Arrays.asList("node2"), true);
+                new AbstractionEdge(List.of("edge1"), List.of("edgeAttribute1"), List.of("node1"),
+                    List.of("node2"), true);
         aNodes.add(aNode1);
         aNodes.add(aNode2);
         aEdges.add(aEdge);
@@ -81,26 +83,26 @@ public class GtopTest {
         List<ImplementationNode> iNodes = new ArrayList<>();
         List<ImplementationEdge> iEdges = new ArrayList<>();
 
-        List<Attribute> node1Attributes = Arrays.asList(new Attribute("attributeColumn", "kibe", "VARCHAR(10)"));
-        List<RestrictionClauses> node1Restrictions = Arrays.asList(new RestrictionClauses());
+        List<Attribute> node1Attributes = List.of(new Attribute("attributeColumn", "kibe", "VARCHAR(10)"));
+        List<RestrictionClauses> node1Restrictions = List.of(new RestrictionClauses());
         ImplementationNode iNode1 =
-                new ImplementationNode(Arrays.asList("node1"), "node1Table", Arrays.asList(new NodeIdImplementation(
-                        "node1IdColumnName", "VARCHAR(100)", 1)), node1Attributes, node1Restrictions);
+                new ImplementationNode(List.of("node1"), "node1Table", List.of(new NodeIdImplementation(
+                    "node1IdColumnName", "VARCHAR(100)", 1)), node1Attributes, node1Restrictions);
 
-        List<Attribute> node2Attributes = Arrays.asList(new Attribute("attributeColumn", "pao", "VARCHAR(10)"));
+        List<Attribute> node2Attributes = List.of(new Attribute("attributeColumn", "pao", "VARCHAR(10)"));
         ImplementationNode iNode2 =
-                new ImplementationNode(Arrays.asList("node2"), "node2Table", Arrays.asList(new NodeIdImplementation(
-                        "node2IdColumnName", "VARCHAR(100)", 1)), node2Attributes, node1Restrictions);
+                new ImplementationNode(List.of("node2"), "node2Table", List.of(new NodeIdImplementation(
+                    "node2IdColumnName", "VARCHAR(100)", 1)), node2Attributes, node1Restrictions);
 
         iNodes.add(iNode1);
         iNodes.add(iNode2);
 
-        List<EdgeAttribute> eAttributes = Arrays.asList(new EdgeAttribute());
+        List<EdgeAttribute> eAttributes = List.of(new EdgeAttribute());
         List<TraversalPath> paths =
-                Arrays.asList(new TraversalPath(Arrays.asList(new TraversalHop("edgeTable", "edgeSourceTableColumn",
-                        "edgejoinTableSourceColumn", "edgeJoinTableName", "edgeJoinTableDestinationColumn",
-                        "edgeDestinationTableColumn", "edgeDestionationTableName", eAttributes, 1, null))));
-        ImplementationEdge iEdge = new ImplementationEdge(Arrays.asList("edge1"), paths);
+            List.of(new TraversalPath(List.of(new TraversalHop("edgeTable", "edgeSourceTableColumn",
+                "edgejoinTableSourceColumn", "edgeJoinTableName", "edgeJoinTableDestinationColumn",
+                "edgeDestinationTableColumn", "edgeDestionationTableName", eAttributes, 1, null))));
+        ImplementationEdge iEdge = new ImplementationEdge(List.of("edge1"), paths);
 
         iEdges.add(iEdge);
 
@@ -154,16 +156,16 @@ public class GtopTest {
 
         // abstract edges:
 
-        Assert.assertEquals(gInterface.getAbstractionEdgesByTypes("edge1").get(0).getDestinationType().get(0),
+        assertEquals(gInterface.getAbstractionEdgesByTypes("edge1").get(0).getDestinationType().get(0),
                 gInterfaceFromString.getAbstractionEdgesByTypes("edge1").get(0).getDestinationType().get(0));
 
-        Assert.assertEquals(gInterface.getAbstractionEdgesByTypes("edge1").get(0).getSourceType().get(0),
+        assertEquals(gInterface.getAbstractionEdgesByTypes("edge1").get(0).getSourceType().get(0),
                 gInterfaceFromString.getAbstractionEdgesByTypes("edge1").get(0).getSourceType().get(0));
 
-        Assert.assertEquals(gInterface.getAbstractionEdgesByTypes("edge1").get(0).isDirected(), gInterfaceFromString
+        assertEquals(gInterface.getAbstractionEdgesByTypes("edge1").get(0).isDirected(), gInterfaceFromString
                 .getAbstractionEdgesByTypes("edge1").get(0).isDirected());
 
-        Assert.assertEquals(gInterface.getAbstractionEdgesByTypes("edge1").get(0).getTypes().get(0), gInterfaceFromString
+        assertEquals(gInterface.getAbstractionEdgesByTypes("edge1").get(0).getTypes().get(0), gInterfaceFromString
                 .getAbstractionEdgesByTypes("edge1").get(0).getTypes().get(0));
 
         AbstractionNode nod1 = gInterface.getAbstractionNodesByTypes("node1").get(0);
@@ -177,19 +179,19 @@ public class GtopTest {
         List<AbstractionNode> allNodesFromEdge =
                 gInterface.getNodesForEdge(gInterface.getAbstractionEdgesByTypes("edge1").get(0));
 
-        Assert.assertTrue(allNodes.contains(nod1) && allNodes.contains(nod2));
-        Assert.assertTrue(sourceNodes.contains(nod1) && sourceNodes.size() == 1);
-        Assert.assertTrue(destinationNodes.contains(nod2) && destinationNodes.size() == 1);
-        Assert.assertTrue(allNodesFromEdge.size() == 2 && allNodesFromEdge.contains(nod1)
+        assertTrue(allNodes.contains(nod1) && allNodes.contains(nod2));
+        assertTrue(sourceNodes.contains(nod1) && sourceNodes.size() == 1);
+        assertTrue(destinationNodes.contains(nod2) && destinationNodes.size() == 1);
+        assertTrue(allNodesFromEdge.size() == 2 && allNodesFromEdge.contains(nod1)
                 && allNodesFromEdge.contains(nod2));
 
         //Assert.assertEquals(impedg1, impedg2);
 
         // abstract Nodes:
-        Assert.assertEquals(gInterface.getAbstractionNodesByTypes("node1"),
+        assertEquals(gInterface.getAbstractionNodesByTypes("node1"),
                 gInterfaceFromString.getAbstractionNodesByTypes("node1"));
 
-        Assert.assertNotEquals(gInterface.getAbstractionNodesByTypes("node1"),
+        assertNotEquals(gInterface.getAbstractionNodesByTypes("node1"),
                 gInterfaceFromString.getAbstractionNodesByTypes("node2"));
 
         //Assert.assertEquals(gTop.getAbstractionNodes(), gtopFromString.getAbstractionNodes());
@@ -197,7 +199,7 @@ public class GtopTest {
         //Assert.assertEquals(impnd1.get(0), impnd2.get(0));
 
         // Graph metadata
-        Assert.assertEquals(gTop.getImplementationLevel().getGraphMetadata(), gInterfaceFromString.getGraphMetadata());
+        assertEquals(gTop.getImplementationLevel().getGraphMetadata(), gInterfaceFromString.getGraphMetadata());
     }
 
 }
