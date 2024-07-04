@@ -13,4 +13,12 @@ public class Cypher2SqlException extends Exception {
     protected Cypher2SqlException(String message) {
         super(message);
     }
+
+    protected Cypher2SqlException(String message, Exception e) {
+        super(message, e);
+    }
+
+    protected Cypher2SqlException(Exception e) {
+        super(e);
+    }
 }

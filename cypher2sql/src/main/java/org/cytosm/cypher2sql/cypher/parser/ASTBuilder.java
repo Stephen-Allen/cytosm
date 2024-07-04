@@ -1,9 +1,10 @@
 package org.cytosm.cypher2sql.cypher.parser;
 
+import org.antlr.v4.runtime.CharStream;
+import org.antlr.v4.runtime.CharStreams;
+import org.antlr.v4.runtime.CommonTokenStream;
 import org.cytosm.cypher2sql.cypher.ast.Statement;
 import org.cytosm.cypher2sql.cypher.ast.clause.match.pattern.Pattern;
-import org.antlr.v4.runtime.ANTLRInputStream;
-import org.antlr.v4.runtime.CommonTokenStream;
 
 /**
  */
@@ -15,7 +16,7 @@ public class ASTBuilder {
      * @return Returns the generated AST.
      */
     public static Statement parse(String cypher) {
-        ANTLRInputStream input = new ANTLRInputStream(cypher);
+        CharStream input = CharStreams.fromString(cypher);
         CypherLexer lexer = new CypherLexer(input);
         CommonTokenStream tokens = new CommonTokenStream(lexer);
         CypherParser parser = new CypherParser(tokens);
@@ -28,7 +29,7 @@ public class ASTBuilder {
      * @return Returns the generated AST.
      */
     public static Pattern parsePattern(String pattern) {
-        ANTLRInputStream input = new ANTLRInputStream(pattern);
+        CharStream input = CharStreams.fromString(pattern);
         CypherLexer lexer = new CypherLexer(input);
         CommonTokenStream tokens = new CommonTokenStream(lexer);
         CypherParser parser = new CypherParser(tokens);

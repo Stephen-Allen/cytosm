@@ -1,5 +1,6 @@
 package org.cytosm.cypher2sql.lowering;
 
+import java.lang.reflect.InvocationTargetException;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
@@ -13,7 +14,6 @@ import org.cytosm.common.gtop.GTopInterface;
 import org.cytosm.common.gtop.implementation.relational.ImplementationNode;
 import org.cytosm.cypher2sql.lowering.exceptions.BugFound;
 import org.cytosm.cypher2sql.lowering.exceptions.Cypher2SqlException;
-import org.cytosm.cypher2sql.lowering.exceptions.Unreachable;
 import org.cytosm.cypher2sql.lowering.sqltree.BaseSelect;
 import org.cytosm.cypher2sql.lowering.sqltree.ScopeSelect;
 import org.cytosm.cypher2sql.lowering.sqltree.SimpleOrScopeSelect;
@@ -112,7 +112,7 @@ public class ExpandNodeVarWithGtop {
                 List<NodeVar> vars = fromItem.variables.stream()
                         .filter(v -> v instanceof NodeVar)
                         .map(v -> (NodeVar) v)
-                        .collect(Collectors.toList());
+                        .toList();
 
                 // If we have just one variable then we might
                 // generate
@@ -305,23 +305,20 @@ public class ExpandNodeVarWithGtop {
 
                 WithSelect newWith;
 
-                if (oldWith.subquery instanceof UnionSelect) {
+                if (oldWith.subquery instanceof final UnionSelect nestedUnion) {
 
-                    UnionSelect nestedUnion = (UnionSelect) oldWith.subquery;
                     int n = (selectId / j) % nestedUnion.unions.size();
                     newWith = new WithSelect(shallowClone((SimpleSelect) nestedUnion.unions.get(n), true));
 
                     j *= nestedUnion.unions.size();
-                } else if (oldWith.subquery instanceof SimpleSelect) {
-
-                    newWith = new WithSelect(shallowClone((SimpleSelect) oldWith.subquery, true));
+                }
+                else if (oldWith.subquery instanceof SimpleSelect ss) {
+                    newWith = new WithSelect(shallowClone(ss, true));
 
                     j *= 1;
-                } else {
-
-                    throw new BugFound(
-                            "Can't handle '" + oldWith.subquery.getClass() + "' in partialClone of ScopeSelect"
-                    );
+                }
+                else {
+                    throw new BugFound("Can't handle '" + oldWith.subquery.getClass() + "' in partialClone of ScopeSelect");
                 }
 
                 newWith.subqueryName = oldWith.subqueryName;
@@ -381,7 +378,7 @@ public class ExpandNodeVarWithGtop {
             FromItem fetchFrom = new FromItem();
             fetchFrom.source = wrappedUnion;
             fetchFrom.variables = oldReturn.fromItem.stream().flatMap(fi -> fi.variables.stream())
-                    .collect(Collectors.toSet()).stream().collect(Collectors.toList());
+                    .collect(Collectors.toSet()).stream().toList();
             res.fromItem.add(fetchFrom);
             return res;
         }
@@ -399,7 +396,7 @@ public class ExpandNodeVarWithGtop {
      */
     private static SimpleSelect shallowClone(SimpleSelect select, boolean includeFroms) throws Cypher2SqlException {
         try {
-            SimpleSelect newInstance = select.getClass().newInstance();
+            SimpleSelect newInstance = select.getClass().getDeclaredConstructor().newInstance();
             newInstance.varId = select.varId;
             newInstance.exportedItems = select.exportedItems;
             newInstance.isDistinct = select.isDistinct;
@@ -408,14 +405,12 @@ public class ExpandNodeVarWithGtop {
             newInstance.orderBy = select.orderBy;
             newInstance.whereCondition = select.whereCondition;
             if (includeFroms) {
-                newInstance.fromItem = select.fromItem.stream().collect(Collectors.toList());
+                newInstance.fromItem = new ArrayList<>(select.fromItem);
             }
             return newInstance;
-        } catch (InstantiationException e) {
-            e.printStackTrace();
-        } catch (IllegalAccessException e) {
-            e.printStackTrace();
         }
-        throw new Unreachable();
+        catch (InstantiationException | IllegalAccessException | InvocationTargetException | NoSuchMethodException e) {
+            throw new BugFound(e);
+        }
     }
 }
