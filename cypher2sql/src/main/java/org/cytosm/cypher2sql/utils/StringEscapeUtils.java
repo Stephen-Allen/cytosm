@@ -5,7 +5,6 @@ import org.apache.commons.lang3.text.translate.CharSequenceTranslator;
 import org.apache.commons.lang3.text.translate.LookupTranslator;
 import org.apache.commons.lang3.text.translate.UnicodeUnescaper;
 
-import static com.google.common.base.Preconditions.checkNotNull;
 import static org.apache.commons.lang3.ArrayUtils.contains;
 
 /**
@@ -21,8 +20,8 @@ public class StringEscapeUtils {
      * @return the escaped string
      */
     public static String escape(final String value, final char[] specialChars) {
-        checkNotNull(value, "value must not be null");
-        checkNotNull(specialChars, "special chars must not be null");
+        if (null == value) throw new NullPointerException("value must not be null");
+        if (null == specialChars) throw new NullPointerException("special chars must not be null");
 
         return escape(value, specialChars, new char[] {});
     }

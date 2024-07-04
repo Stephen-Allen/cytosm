@@ -1,13 +1,13 @@
 package org.cytosm.cypher2sql.lowering;
 
+import java.io.IOException;
+import java.nio.file.Files;
+import java.nio.file.Path;
+
 import org.cytosm.common.gtop.GTopInterface;
 import org.cytosm.common.gtop.RelationalGTopInterface;
 import org.cytosm.cypher2sql.PassAvailables;
-import org.apache.commons.io.FileUtils;
 import org.junit.Test;
-
-import java.io.File;
-import java.io.IOException;
 
 /**
  * Put here any tests that stress a particular feature or
@@ -17,8 +17,8 @@ import java.io.IOException;
 public class StressTests {
 
     private GTopInterface getGTopInterface() throws IOException {
-        String path = "src" + File.separatorChar + "test" + File.separatorChar + "resources";
-        String jsonInString = FileUtils.readFileToString(new File(path + "/northwind.gtop"));
+        Path path = Path.of("src", "test", "resources", "northwind.gtop");
+        String jsonInString = Files.readString(path);
         return new RelationalGTopInterface(jsonInString);
     }
 

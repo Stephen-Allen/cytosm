@@ -9,7 +9,6 @@ import java.util.Optional;
 import java.util.OptionalLong;
 import java.util.stream.Collectors;
 
-import org.apache.commons.collections4.MapUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.cytosm.cypher2sql.cypher.ast.clause.match.pattern.LabelName;
 import org.cytosm.cypher2sql.cypher.ast.clause.match.pattern.NodePattern;
@@ -69,7 +68,7 @@ public class CypherConverter extends CanonicalConverter {
         List<ExpansionElement> all = extractElements(pattern);
 
         // Add external context to information, if available:
-        if (!MapUtils.isEmpty(externalContext)) {
+        if (null != externalContext && !externalContext.isEmpty()) {
             List<ExpansionElement> elementList;
 
             // Only elements that can be referenced on the outside are of interest. They require
